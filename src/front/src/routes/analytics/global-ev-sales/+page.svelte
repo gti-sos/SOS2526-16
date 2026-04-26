@@ -23,7 +23,7 @@
                 return;
             }
 
-            // Agrupar los datos por tipo de motor (Powertrain)
+            // Agrupar los datos por tipo de motor (Powertrain))
             const seriesData = {};
             
             datos.forEach(d => {
