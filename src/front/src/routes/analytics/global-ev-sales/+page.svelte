@@ -1,7 +1,6 @@
 <script>
     import { onMount } from 'svelte';
     import { browser } from '$app/environment';
-    import Highcharts from 'highcharts';
 
     // Declaramos el contenedor donde se inyectará la gráfica
     let chartContainer;
@@ -12,11 +11,6 @@
         if (!browser) return;
 
         try {
-            // Importar el módulo de burbujas dinámicamente para Svelte
-            const module = await import('highcharts/highcharts-more');
-            const initMore = module.default || module;
-            initMore(Highcharts);
-
             // Cargar datos
             await fetch('/api/v1/global-ev-sales/loadInitialData');
             const res = await fetch('/api/v1/global-ev-sales');
@@ -29,7 +23,7 @@
                 return;
             }
 
-            // Agrupar los datos por tipo de motor (Powertrain) para crear distintas series (colores)
+            // Agrupar los datos por tipo de motor (Powertrain)
             const seriesData = {};
             
             datos.forEach(d => {
@@ -43,20 +37,21 @@
                     name: d.region,
                     x: d.year,
                     y: d.economic_impact,
-                    z: d.value, // El tamaño de la burbuja depende del valor de ventas
+                    z: d.value, // El tamaño de la burbuja
                     categoria: d.category,
                     modo: d.mode
                 });
             });
 
-          
-            
             const seriesArray = Object.keys(seriesData).map(motorName => {
                 return {
                     name: `Motor: ${motorName}`,
                     data: seriesData[motorName]
                 };
             });
+
+            // 🔥 TRUCO: Capturamos Highcharts directamente de la ventana del navegador
+            const Highcharts = window.Highcharts;
 
             // Generar la gráfica
             Highcharts.chart(chartContainer, {
@@ -81,9 +76,8 @@
                     title: {
                         text: 'Año de Registro'
                     },
-                    // Ajustamos las etiquetas para que no salgan números con comas (Ej. 2,021)
                     labels: {
-                        format: '{value}'
+                        format: '{value}' // Quita las comas de los años
                     }
                 },
                 yAxis: {
@@ -99,19 +93,18 @@
                 },
                 tooltip: {
                     useHTML: true,
-                    headerFormat: '<table>',
-                    pointFormat: '<tr><th colspan="2"><h3>{point.name}</h3></th></tr>' +
-                        '<tr><th>Año:</th><td>{point.x}</td></tr>' +
-                        '<tr><th>Impacto Económico:</th><td>{point.y}</td></tr>' +
-                        '<tr><th>Volumen Ventas:</th><td>{point.z}</td></tr>' +
-                        '<tr><th>Modo:</th><td>{point.modo}</td></tr>' +
-                        '<tr><th>Categoría:</th><td>{point.categoria}</td></tr>',
+                    headerFormat: '<table style="min-width: 150px;">',
+                    pointFormat: '<tr><th colspan="2" style="border-bottom: 1px solid #ccc; padding-bottom: 5px;"><h3>{point.name}</h3></th></tr>' +
+                        '<tr><th style="text-align: left; padding-top: 5px;">Año:</th><td style="text-align: right; padding-top: 5px;">{point.x}</td></tr>' +
+                        '<tr><th style="text-align: left;">Impacto Económico:</th><td style="text-align: right;">{point.y}</td></tr>' +
+                        '<tr><th style="text-align: left;">Volumen Ventas:</th><td style="text-align: right;">{point.z}</td></tr>' +
+                        '<tr><th style="text-align: left;">Modo:</th><td style="text-align: right;">{point.modo}</td></tr>' +
+                        '<tr><th style="text-align: left;">Categoría:</th><td style="text-align: right;">{point.categoria}</td></tr>',
                     footerFormat: '</table>',
                     followPointer: true
                 },
                 plotOptions: {
                     bubble: {
-                        // Hace que las burbujas sean un poco transparentes
                         marker: {
                             fillOpacity: 0.6
                         }
@@ -129,6 +122,8 @@
 
 <svelte:head>
     <title>Analytics - Global EV Sales</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
 </svelte:head>
 
 <main>
