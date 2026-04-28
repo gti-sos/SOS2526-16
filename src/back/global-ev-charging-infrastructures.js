@@ -159,6 +159,54 @@ function evChargingInfrastructuresAPI(app) {
 
   });
 
+// API integración RapidAPI - Gas Price USA
+app.get(BASE_URL_API + "/proxy/usa-gas-price", async (req, res) => {
+  try {
+    const response = await fetch(
+      "https://gas-price.p.rapidapi.com/allUsaPrice",
+      {
+        method: "GET",
+        headers: {
+          "x-rapidapi-host": "gas-price.p.rapidapi.com",
+          "x-rapidapi-key": "e82db419f6msh0f009c1edf1ac68p11b73bjsnb01888067a94"
+        }
+      }
+    );
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: "Error RapidAPI" });
+    }
+
+    const data = await response.json();
+    res.json(data);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Proxy error" });
+  }
+});
+
+//Api integracion 2 - Top Brand Names Valuation API
+app.get(BASE_URL_API + "/proxy/brands", async (req, res) => {
+  try {
+    const response = await fetch(
+      "https://top-brand-names-valuation-api.p.rapidapi.com/brands",
+      {
+        method: "GET",
+        headers: {
+          "x-rapidapi-host": "top-brand-names-valuation-api.p.rapidapi.com",
+          "x-rapidapi-key": "e82db419f6msh0f009c1edf1ac68p11b73bjsnb01888067a94"
+        }
+      }
+    );
+
+    const data = await response.json();
+    res.json(data);
+
+  } catch (error) {
+    res.status(500).json({ error: "Proxy error" });
+  }
+});
   // GET RECURSO
   app.get(BASE_URL_API + "/:country/:year", (req, res) => {
 
