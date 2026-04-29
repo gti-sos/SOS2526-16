@@ -11,5 +11,11 @@
 		<li>
 			<a href="./integrations/brands">Top Brand Valuation</a>
 		</li>
+		<li>
+			<a href="./integrations/brands">Top Brand Valuation</a>
+		</li>
+		<li>
+			<a href="./integrations/conflict-stats">Conflict Stats</a>
+		</li>
 	</ul>
 </main>
