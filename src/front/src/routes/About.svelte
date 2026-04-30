@@ -64,3 +64,24 @@
 <a href="https://sos2526-16-production.up.railway.app/">
 	Deploy extra en railway (Javier Prados Acosta)
 </a>
+
+<h2>Analisis</h2>
+	<li>
+		<a href="./analytics"> Gráfica grupal </a>
+	</li>
+
+	<li>
+		<a href="./analytics/global-ev-stock-volumes"> Gráfica Adrián </a>
+	</li>
+
+	<li>
+		<a href="./analytics/global-ev-sales"> Gráfica Ignacio </a>
+	</li>
+	<li>
+		<a href="./analytics/global-ev-charging-infrastructures"> Gráfica Javier </a>
+	</li>
+
+	<h2>Integraciones</h2>
+	<li>
+		<a href="./analytics/global-ev-charging-infrastructures/integrations"> Integraciones Javier </a>
+	</li>
