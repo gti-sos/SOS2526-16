@@ -15,5 +15,8 @@
 		<li>
 			<a href="./integrations/conflict-stats">Conflict Stats</a>
 		</li>
+		<li>
+			<a href="./integrations/crypto">Crypto Dashboard</a>
+		</li>
 	</ul>
 </main>
