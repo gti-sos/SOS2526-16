@@ -18,39 +18,54 @@
 
     onMount(async () => {
         await loadScript("https://code.highcharts.com/highcharts.js");
+        await loadScript("https://code.highcharts.com/highcharts-more.js");
 
         const res = await fetch("/api/v1/global-ev-charging-infrastructures/proxy/crypto");
         const data = await res.json();
 
-        console.log("CRYPTO DATA:", data);
-
-        // ordenar por volumen y coger top 10
-        const top10 = data
+        const top20 = data
+            .filter(d =>
+                Number(d.lastPrice) > 0 &&
+                Number(d.volume) > 0 &&
+                !isNaN(Number(d.priceChangePercent))
+            )
             .sort((a, b) => Number(b.volume) - Number(a.volume))
-            .slice(0, 10);
+            .slice(0, 20);
 
-        const categories = top10.map(d => d.symbol);
-        const seriesData = top10.map(d => ({
-            y: Number(d.volume),
+        const bubbleData = top20.map(d => ({
+            name: d.symbol,
+            x: Number(d.lastPrice),
+            y: Number(d.priceChangePercent),
+            z: Number(d.volume),
             custom: d
         }));
 
         Highcharts.chart("container", {
             chart: {
-                type: "column"
+                type: "bubble",
+                zoomType: "xy"
             },
 
             title: {
-                text: "Top 10 Cryptos by Volume (24h)"
+                text: "Top 20 Cryptos: Price, Change and Volume"
+            },
+
+            subtitle: {
+                text: "Bubble size represents 24h volume"
             },
 
             xAxis: {
-                categories
+                title: {
+                    text: "Last Price"
+                }
             },
 
             yAxis: {
                 title: {
-                    text: "Volume"
+                    text: "Price Change Percent (%)"
+                },
+                labels: {
+                    format: "{value}%"
                 }
             },
 
@@ -61,26 +76,42 @@
 
                     return `
                         <b>${d.symbol}</b><br/><br/>
-
-                        Price: ${d.lastPrice}<br/>
-                        Change: ${d.priceChange} (${d.priceChangePercent}%)<br/>
-                        High: ${d.highPrice}<br/>
-                        Low: ${d.lowPrice}<br/>
+                        Last price: ${d.lastPrice}<br/>
+                        Price change: ${d.priceChange}<br/>
+                        Change percent: ${d.priceChangePercent}%<br/>
+                        Weighted avg price: ${d.weightedAvgPrice}<br/>
+                        Previous close: ${d.prevClosePrice}<br/>
+                        High price: ${d.highPrice}<br/>
+                        Low price: ${d.lowPrice}<br/>
                         Volume: ${d.volume}<br/>
+                        Quote volume: ${d.quoteVolume}<br/>
+                        Bid price: ${d.bidPrice}<br/>
+                        Ask price: ${d.askPrice}<br/>
                         Trades: ${d.count}
                     `;
                 }
             },
 
+            plotOptions: {
+                bubble: {
+                    minSize: 8,
+                    maxSize: 60,
+                    dataLabels: {
+                        enabled: true,
+                        format: "{point.name}"
+                    }
+                }
+            },
+
             series: [{
-                name: "Volume",
-                data: seriesData
+                name: "Cryptos",
+                data: bubbleData
             }]
         });
     });
 </script>
 
-<h1>Crypto Dashboard</h1>
+<h1>Crypto Bubble Chart</h1>
 
 <div id="container"></div>
 
@@ -92,7 +123,7 @@
 
     #container {
         width: 100%;
-        height: 500px;
+        height: 600px;
         margin: 0 auto;
     }
 </style>
