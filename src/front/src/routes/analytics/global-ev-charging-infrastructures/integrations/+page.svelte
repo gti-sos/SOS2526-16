@@ -18,5 +18,8 @@
 		<li>
 			<a href="./integrations/crypto">Crypto Dashboard</a>
 		</li>
+		<li>
+			<a href="./integrations/renewable-energy-consumptions">Renewable Energy Consumption</a>
+		</li>
 	</ul>
 </main>
