@@ -207,27 +207,34 @@ app.get(BASE_URL_API + "/proxy/brands", async (req, res) => {
     res.status(500).json({ error: "Proxy error" });
   }
 });
-//Api integración 3 - Binance
-app.get(BASE_URL_API + "/proxy/crypto", async (req, res) => {
+//Api integración 3 - CoinLore Cryptocurrency API
+app.get(BASE_URL_API + "/proxy/crypto-exchanges", async (req, res) => {
   try {
     const response = await fetch(
-      "https://binance43.p.rapidapi.com/ticker/24hr",
+      "https://coinlore-cryptocurrency.p.rapidapi.com/api/exchanges/",
       {
         method: "GET",
         headers: {
-          "x-rapidapi-host": "binance43.p.rapidapi.com",
+          "x-rapidapi-host": "coinlore-cryptocurrency.p.rapidapi.com",
           "x-rapidapi-key": "e82db419f6msh0f009c1edf1ac68p11b73bjsnb01888067a94"
         }
       }
     );
 
     if (!response.ok) {
-      return res.status(response.status).json({ error: "Error RapidAPI" });
+      const text = await response.text();
+      return res.status(response.status).json({
+        error: "Error RapidAPI",
+        details: text
+      });
     }
 
     const data = await response.json();
 
-    res.json(data);
+    // CoinLore devuelve un objeto con claves numéricas, lo convertimos en array
+    const exchanges = Object.values(data);
+
+    res.json(exchanges);
 
   } catch (error) {
     console.error(error);

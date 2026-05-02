@@ -20,23 +20,30 @@
         await loadScript("https://code.highcharts.com/highcharts.js");
         await loadScript("https://code.highcharts.com/highcharts-more.js");
 
-        const res = await fetch("/api/v1/global-ev-charging-infrastructures/proxy/crypto");
+        const res = await fetch("/api/v1/global-ev-charging-infrastructures/proxy/crypto-exchanges");
+
+        if (!res.ok) {
+            console.error("Error al cargar exchanges:", res.status);
+            return;
+        }
+
         const data = await res.json();
+
+        console.log("EXCHANGES DATA:", data);
 
         const top20 = data
             .filter(d =>
-                Number(d.lastPrice) > 0 &&
-                Number(d.volume) > 0 &&
-                !isNaN(Number(d.priceChangePercent))
+                Number(d.volume_usd) > 0 &&
+                Number(d.active_pairs) > 0
             )
-            .sort((a, b) => Number(b.volume) - Number(a.volume))
+            .sort((a, b) => Number(b.volume_usd) - Number(a.volume_usd))
             .slice(0, 20);
 
         const bubbleData = top20.map(d => ({
-            name: d.symbol,
-            x: Number(d.lastPrice),
-            y: Number(d.priceChangePercent),
-            z: Number(d.volume),
+            name: d.name,
+            x: Number(d.active_pairs),
+            y: Number(d.volume_usd),
+            z: Number(d.volume_usd),
             custom: d
         }));
 
@@ -47,25 +54,22 @@
             },
 
             title: {
-                text: "Top 20 Cryptos: Price, Change and Volume"
+                text: "Top 20 Crypto Exchanges by Volume"
             },
 
             subtitle: {
-                text: "Bubble size represents 24h volume"
+                text: "Bubble size represents USD volume"
             },
 
             xAxis: {
                 title: {
-                    text: "Last Price"
+                    text: "Active pairs"
                 }
             },
 
             yAxis: {
                 title: {
-                    text: "Price Change Percent (%)"
-                },
-                labels: {
-                    format: "{value}%"
+                    text: "Volume USD"
                 }
             },
 
@@ -75,19 +79,13 @@
                     const d = this.point.custom;
 
                     return `
-                        <b>${d.symbol}</b><br/><br/>
-                        Last price: ${d.lastPrice}<br/>
-                        Price change: ${d.priceChange}<br/>
-                        Change percent: ${d.priceChangePercent}%<br/>
-                        Weighted avg price: ${d.weightedAvgPrice}<br/>
-                        Previous close: ${d.prevClosePrice}<br/>
-                        High price: ${d.highPrice}<br/>
-                        Low price: ${d.lowPrice}<br/>
-                        Volume: ${d.volume}<br/>
-                        Quote volume: ${d.quoteVolume}<br/>
-                        Bid price: ${d.bidPrice}<br/>
-                        Ask price: ${d.askPrice}<br/>
-                        Trades: ${d.count}
+                        <b>${d.name}</b><br/><br/>
+                        ID: ${d.id}<br/>
+                        Name ID: ${d.name_id}<br/>
+                        Country: ${d.country ?? "N/A"}<br/>
+                        Volume USD: ${Number(d.volume_usd).toLocaleString()}<br/>
+                        Active pairs: ${d.active_pairs}<br/>
+                        URL: ${d.url ?? "N/A"}
                     `;
                 }
             },
@@ -95,7 +93,7 @@
             plotOptions: {
                 bubble: {
                     minSize: 8,
-                    maxSize: 60,
+                    maxSize: 70,
                     dataLabels: {
                         enabled: true,
                         format: "{point.name}"
@@ -104,14 +102,14 @@
             },
 
             series: [{
-                name: "Cryptos",
+                name: "Crypto exchanges",
                 data: bubbleData
             }]
         });
     });
 </script>
 
-<h1>Crypto Bubble Chart</h1>
+<h1>Crypto Exchanges Bubble Chart</h1>
 
 <div id="container"></div>
 
@@ -123,7 +121,7 @@
 
     #container {
         width: 100%;
-        height: 600px;
+        height: 650px;
         margin: 0 auto;
     }
 </style>
