@@ -21,5 +21,8 @@
 		<li>
 			<a href="./integrations/renewable-energy-consumptions">Renewable Energy Consumption</a>
 		</li>
+		<li>
+			<a href="./integrations/one-piece">One Piece Characters</a>	
+		</li>
 	</ul>
 </main>
