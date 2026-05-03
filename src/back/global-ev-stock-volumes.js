@@ -184,6 +184,67 @@ function evStockAPI(app, verifyToken) {
     });
 
 
+    //PROXY
+    app.get(BASE_URL_API + "/proxy/cars", async (req, res) => {
+    try {
+        const response = await fetch("https://car-api2.p.rapidapi.com/api/makes", {
+            method: "GET",
+            headers: {
+                "x-rapidapi-host": "car-api2.p.rapidapi.com",
+                "x-rapidapi-key": "2dfa7550d6msh91c7375e5818ed8p14e879jsnba878ffd47ee"
+            }
+        });
+        
+        if (!response.ok) return res.status(response.status).json({ error: "Error en CarAPI" });
+        
+        const data = await response.json();
+        res.json(data); // Reenviamos el JSON al frontend
+    } catch (error) {
+        res.status(500).json({ error: "Proxy error" });
+    }
+});
+
+// PROXY para el Mapa (Usando Terremotos USGS - Muy estable)
+app.get(BASE_URL_API + "/proxy/map-data", async (req, res) => {
+    try {
+        const response = await fetch("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson");
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: "Fallo en el proxy de mapas" });
+    }
+});
+
+// PROXY 2: Bases de Lanzamiento de SpaceX
+app.get(BASE_URL_API + "/proxy/spacex", async (req, res) => {
+    try {
+        const response = await fetch("https://api.spacexdata.com/v4/launchpads");
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: "Fallo en proxy de SpaceX" });
+    }
+});
+
+// PROXY para Población USA (Arregla el error de CORS)
+app.get(BASE_URL_API + "/proxy/usa-population", async (req, res) => {
+    try {
+        const response = await fetch("https://datausa.io/api/data?drilldowns=Nation&measures=Population");
+        
+        if (!response.ok) {
+            return res.status(response.status).json({ error: "Error en DataUSA" });
+        }
+        
+        const data = await response.json();
+        res.json(data); // Reenviamos el JSON al frontend
+    } catch (error) {
+        console.error("Error en el proxy de población:", error);
+        res.status(500).json({ error: "Proxy error" });
+    }
+});
+
+
+
     //Post
     app.post(BASE_URL_API + "/global-ev-stock-volumes", verifyToken, (req, res) => {
         const newRegister = req.body;
