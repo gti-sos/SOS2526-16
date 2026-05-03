@@ -3,8 +3,9 @@
     import { browser } from '$app/environment';
 
     let chartContainer;
-    let errorMensaje = '';
-    let cargando = true;
+    // ¡Añadimos $state() para que Svelte actualice la pantalla!
+    let errorMensaje = $state('');
+    let cargando = $state(true);
 
     onMount(async () => {
         if (!browser) return;
@@ -20,19 +21,22 @@
                 document.head.appendChild(script);
             });
 
-            // 2. Fetch a tu API y a la del compañero
+            // 2. Cargamos datos iniciales propios por si Render se ha reiniciado
+            await fetch('/api/v1/global-ev-sales/loadInitialData');
+
+            // 3. Fetch a tu API y a la del compañero
             const resMisDatos = await fetch('/api/v1/global-ev-sales');
             
             const resFelicidad = await fetch('/api/v2/happiness-indices');
 
             if (!resMisDatos.ok || !resFelicidad.ok) {
-                throw new Error('Error al conectar con una de las APIs');
+                throw new Error('Error al conectar con una de las APIs. Puede que su servidor esté caído.');
             }
 
             const misDatos = await resMisDatos.json();
             const datosFelicidad = await resFelicidad.json();
 
-            // 3. Cruzar los datos (Usaremos el año 2022 que parece tener muchos registros)
+            // 4. Cruzar los datos (Usaremos el año 2022)
             const anioComun = 2022; 
             
             const misDatosFiltrados = misDatos.filter(d => Number(d.year) === anioComun);
@@ -47,9 +51,9 @@
 
                 if (matchFelicidad) {
                     scatterData.push({
-                        x: matchFelicidad.happiness_score, // Eje X: Felicidad
-                        y: miDato.value,                   // Eje Y: Ventas EV
-                        country: miDato.region             // Guardamos el nombre para el tooltip
+                        x: matchFelicidad.happiness_score, 
+                        y: miDato.value,                   
+                        country: miDato.region             
                     });
                 }
             });
@@ -60,7 +64,7 @@
                 return;
             }
 
-            // 4. Dibujar la gráfica Scatter con Chart.js
+            // 5. Dibujar la gráfica
             new window.Chart(chartContainer, {
                 type: 'scatter',
                 data: {
@@ -110,7 +114,7 @@
 
         } catch (error) {
             console.error("Error en la integración:", error);
-            errorMensaje = "Ocurrió un error al cargar la integración.";
+            errorMensaje = "Ocurrió un error de red o de permisos (CORS) al cargar la integración.";
             cargando = false;
         }
     });
