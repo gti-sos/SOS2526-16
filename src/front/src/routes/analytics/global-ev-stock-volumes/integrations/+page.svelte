@@ -14,13 +14,13 @@
 			<a href="./integrations/cars">Cars sold rates </a>
 		</li>
 		<li>
-			<a href="./integrations/flags">Countries CORS abierto </a>
-		</li>
-		<li>
 			<a href="./integrations/earthquake-points">Earthquake Points </a>
 		</li>
 			<li>
 			<a href="./integrations/spacex">SpaceX Launchpads</a>
+		</li>
+		<li>
+			<a href="./integrations/temperatures">Weather</a>
 		</li>
 		
 	</ul>
