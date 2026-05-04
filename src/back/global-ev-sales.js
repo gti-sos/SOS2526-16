@@ -126,7 +126,24 @@ router.get(BASE_URL_API + "/proxy/happiness-indices", async (req, res) => {
   }
 });
 
+//PROXY MILITARY
+router.get(BASE_URL_API + "/proxy/military-stats", async (req, res) => {
+  try {
+    const response = await fetch(
+      "https://sos2526-13.onrender.com/api/v2/military-stats" );
 
+    if (!response.ok) {
+      return res.status(response.status).json({ error: "Error en la API de Military" });
+    }
+
+    const data = await response.json();
+    res.json(data);
+
+  } catch (error) {
+    console.error("Error en tu proxy de Military:", error);
+    res.status(500).json({ error: "Proxy error" });
+  }
+});
 
 
 // GET POR REGIÓN (Tu requisito especial)

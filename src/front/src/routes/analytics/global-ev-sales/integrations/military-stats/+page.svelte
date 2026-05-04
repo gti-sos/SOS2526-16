@@ -22,7 +22,7 @@
 
             // 2. Hacemos fetch a tu API y a la del compañero
             const resMisDatos = await fetch('/api/v1/global-ev-sales');
-            const resMilitares = await fetch('https://sos2526-13.onrender.com/api/v2/military-stats');
+            const resMilitares = await fetch('/api/v1/proxy/military-stats');
 
             if (!resMisDatos.ok || !resMilitares.ok) {
                 throw new Error('Error al conectar con una de las APIs');
