@@ -107,29 +107,6 @@ router.get("/", (req, res) => {
 
 
 
-const BASE_URL_API = "/api/v1/global-ev-sales";
-
-app.get(BASE_URL_API + "/proxy/happiness-indices", async (req, res) => {
-  try {
-    const response = await fetch(
-      "https://sos2526-15.onrender.com/api/v2/happiness-indices",
-      {
-        method: "GET"
-      }
-    );
-
-    if (!response.ok) {
-      return res.status(response.status).json({ error: "Error en la API de Felicidad" });
-    }
-
-    const data = await response.json();
-    res.json(data);
-
-  } catch (error) {
-    console.error("Error en tu proxy de Felicidad:", error);
-    res.status(500).json({ error: "Proxy error" });
-  }
-});
 
 // GET POR REGIÓN (Tu requisito especial)
 router.get("/:region", (req, res) => {
