@@ -107,6 +107,25 @@ router.get("/", (req, res) => {
   });
 });
 
+//PROXY FELICIDAD
+router.get(BASE_URL_API + "/proxy/happiness-indices", async (req, res) => {
+  try {
+    const response = await fetch(
+      "https://sos2526-15.onrender.com/api/v2/happiness-indices" );
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: "Error en la API de Felicidad" });
+    }
+
+    const data = await response.json();
+    res.json(data);
+
+  } catch (error) {
+    console.error("Error en tu proxy de Felicidad:", error);
+    res.status(500).json({ error: "Proxy error" });
+  }
+});
+
 
 
 
@@ -129,25 +148,6 @@ router.get("/:region/:year", (req, res) => {
     if (!item) return res.sendStatus(404);
     res.json(item);
   });
-});
-
-//PROXY FELICIDAD
-app.get(BASE_URL_API + "/proxy/happiness", async (req, res) => {
-  try {
-    const response = await fetch(
-      "https://sos2526-15.onrender.com/api/v2/happiness-indices" );
-
-    if (!response.ok) {
-      return res.status(response.status).json({ error: "Error en la API de Felicidad" });
-    }
-
-    const data = await response.json();
-    res.json(data);
-
-  } catch (error) {
-    console.error("Error en tu proxy de Felicidad:", error);
-    res.status(500).json({ error: "Proxy error" });
-  }
 });
 
 

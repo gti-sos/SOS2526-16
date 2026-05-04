@@ -27,7 +27,7 @@
             // 3. Fetch a tu API y a la del compañero
             const resMisDatos = await fetch('/api/v1/global-ev-sales');
             
-            const resFelicidad = await fetch('/api/v1/global-ev-sales/proxy/happiness-indices');
+            const resFelicidad = await fetch('/api/v1/proxy/happiness-indices');
 
             if (!resMisDatos.ok || !resFelicidad.ok) {
                 throw new Error('Error al conectar con una de las APIs. Puede que su servidor esté caído.');
