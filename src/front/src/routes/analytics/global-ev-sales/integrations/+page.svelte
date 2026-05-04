@@ -21,7 +21,7 @@
 			<a href="./integrations/poblacion">Poblacion</a>
 		</li>
 		<li>
-			<a href="./integrations/universidades">Universidades</a>	
+			<a href="./integrations/usuarios">Usuarios</a>	
 		</li>
 	</ul>
 </main>

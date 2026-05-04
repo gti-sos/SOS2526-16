@@ -88,3 +88,6 @@
 	<li>
 		<a href="./analytics/global-ev-stock-volumes/integrations"> Integraciones Adrián </a>
 	</li>
+	<li>
+		<a href="./analytics/global-ev-sales/integrations"> Integraciones Ignacio </a>
+	</li>
