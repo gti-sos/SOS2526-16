@@ -2,7 +2,6 @@
     import { onMount } from "svelte";
 
     let Highcharts;
-    let isLoading = true;
 
     // Función de carga dinámica de scripts (estilo de tu compañero)
     function loadScript(src) {
@@ -23,7 +22,7 @@
             await loadScript("https://code.highcharts.com/modules/accessibility.js");
             Highcharts = window.Highcharts;
 
-            // 2. CARGAR DATOS DE LA API (Ajusta la URL a la real del compañero)
+            // 2. CARGAR DATOS DE LA API
             const res = await fetch("https://sos2526-13.onrender.com/api/v2/exportations-stats");
             const data = await res.json();
 
@@ -39,7 +38,7 @@
             // 4. RENDERIZAR WIDGET
             Highcharts.chart("container-orders", {
                 chart: {
-                    type: "pie" // Los Donuts en Highcharts son tipo 'pie' con hueco
+                    type: "pie" 
                 },
                 title: {
                     text: "Distribución de Pedidos Internacionales (TIV)"

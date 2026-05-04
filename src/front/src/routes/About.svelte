@@ -85,3 +85,6 @@
 	<li>
 		<a href="./analytics/global-ev-charging-infrastructures/integrations"> Integraciones Javier </a>
 	</li>
+	<li>
+		<a href="./analytics/global-ev-stock-volumes/integrations"> Integraciones Adrián </a>
+	</li>
