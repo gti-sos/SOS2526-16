@@ -27,7 +27,7 @@
             // 3. Fetch a tu API y a la del compañero
             const resMisDatos = await fetch('/api/v1/global-ev-sales');
             
-            const resFelicidad = await fetch('/api/v2/happiness-indices');
+            const resFelicidad = await fetch('/api/v1/global-ev-sales/proxy/happiness-indices');
 
             if (!resMisDatos.ok || !resFelicidad.ok) {
                 throw new Error('Error al conectar con una de las APIs. Puede que su servidor esté caído.');
@@ -126,11 +126,7 @@
 
 <main style="max-width: 900px; margin: 0 auto; padding: 20px; text-align: center; font-family: sans-serif;">
     <h2>Correlación: Felicidad Nacional vs Ventas de EV</h2>
-    <p style="color: #666; margin-bottom: 30px;">Integración de <strong>global-ev-sales</strong> con la API de <strong>Felicidad Mundial</strong></p>
-
-    {#if cargando}
-        <div style="padding: 20px; font-size: 18px; color: #00C851;">Cruzando datos y generando gráfico...</div>
-    {/if}
+    <p style="color: #666; margin-bottom: 30px;">Integración de <strong>global-ev-sales</strong> con la API de <strong>Felicidad Mundial</strong> mediante Proxy</p>
 
     {#if errorMensaje}
         <div style="padding: 15px; background-color: #ff4444; color: white; border-radius: 5px; margin-bottom: 20px;">
@@ -138,7 +134,14 @@
         </div>
     {/if}
 
-    <div style="position: relative; height: 500px; width: 100%; display: {cargando || errorMensaje ? 'none' : 'block'}; border: 1px solid #ddd; border-radius: 8px; padding: 10px;">
+    <div style="position: relative; height: 500px; width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 10px; background-color: #f9f9f9;">
+        
+        {#if cargando}
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px; color: #00C851; font-weight: bold;">
+                Cruzando datos y generando gráfico...
+            </div>
+        {/if}
+
         <canvas bind:this={chartContainer}></canvas>
     </div>
 
