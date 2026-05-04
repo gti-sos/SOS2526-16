@@ -3,7 +3,7 @@
     import { browser } from '$app/environment';
 
     let chartContainer;
-    // ¡Añadimos $state() para que Svelte actualice la pantalla!
+    //Añadimos $state() para que Svelte actualice la pantalla
     let errorMensaje = $state('');
     let cargando = $state(true);
 
