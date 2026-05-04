@@ -9,6 +9,8 @@ import dataStore from 'nedb';
 let db = new dataStore();
 const router = express.Router();
 
+let BASE_URL_API = "/api/v1";
+
 // 2. Datos iniciales
 const datos = [
   { region: 'Australia', category: 'Historical', parameter: 'EV stock share', mode: 'Cars', powertrain: 'EV', year: 2011, unit: 'Percent', value: 0.000039253245, economic_impact: 0 },
@@ -128,6 +130,27 @@ router.get("/:region/:year", (req, res) => {
     res.json(item);
   });
 });
+
+//PROXY FELICIDAD
+app.get(BASE_URL_API + "/proxy/happiness", async (req, res) => {
+  try {
+    const response = await fetch(
+      "https://sos2526-15.onrender.com/api/v2/happiness-indices" );
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: "Error en la API de Felicidad" });
+    }
+
+    const data = await response.json();
+    res.json(data);
+
+  } catch (error) {
+    console.error("Error en tu proxy de Felicidad:", error);
+    res.status(500).json({ error: "Proxy error" });
+  }
+});
+
+
 
 // POST COLECCIÓN
 router.post("/", (req, res) => {
