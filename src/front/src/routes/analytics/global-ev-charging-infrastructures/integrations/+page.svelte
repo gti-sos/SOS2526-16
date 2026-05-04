@@ -24,5 +24,8 @@
 		<li>
 			<a href="./integrations/one-piece">One Piece Characters</a>	
 		</li>
+		<li>
+			<a href="./integrations/objects">Objects</a>
+		</li>
 	</ul>
 </main>
