@@ -17,7 +17,7 @@
         await loadScript("https://code.highcharts.com/highcharts.js");
         await loadScript("https://code.highcharts.com/modules/heatmap.js");
 
-        const res = await fetch("https://api-sos.pablogamero.com/api/v1/renewable-energy-consumptions");
+        const res = await fetch("https://api-sos.pablogamero.com/api/v1/renewable-energy-consumptions?limit=100");
         const data = await res.json();
 
         const countries = [...new Set(data.map(d => d.country))];

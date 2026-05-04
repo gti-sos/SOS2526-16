@@ -9,6 +9,8 @@ import dataStore from 'nedb';
 let db = new dataStore();
 const router = express.Router();
 
+let BASE_URL_API = "/api/v1";
+
 // 2. Datos iniciales
 const datos = [
   { region: 'Australia', category: 'Historical', parameter: 'EV stock share', mode: 'Cars', powertrain: 'EV', year: 2011, unit: 'Percent', value: 0.000039253245, economic_impact: 0 },
@@ -105,6 +107,45 @@ router.get("/", (req, res) => {
   });
 });
 
+//PROXY FELICIDAD
+router.get(BASE_URL_API + "/proxy/happiness-indices", async (req, res) => {
+  try {
+    const response = await fetch(
+      "https://sos2526-15.onrender.com/api/v2/happiness-indices" );
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: "Error en la API de Felicidad" });
+    }
+
+    const data = await response.json();
+    res.json(data);
+
+  } catch (error) {
+    console.error("Error en tu proxy de Felicidad:", error);
+    res.status(500).json({ error: "Proxy error" });
+  }
+});
+
+//PROXY MILITARY
+router.get(BASE_URL_API + "/proxy/military-stats", async (req, res) => {
+  try {
+    const response = await fetch(
+      "https://sos2526-13.onrender.com/api/v2/military-stats" );
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: "Error en la API de Military" });
+    }
+
+    const data = await response.json();
+    res.json(data);
+
+  } catch (error) {
+    console.error("Error en tu proxy de Military:", error);
+    res.status(500).json({ error: "Proxy error" });
+  }
+});
+
+
 // GET POR REGIÓN (Tu requisito especial)
 router.get("/:region", (req, res) => {
   const region = req.params.region;
@@ -125,6 +166,8 @@ router.get("/:region/:year", (req, res) => {
     res.json(item);
   });
 });
+
+
 
 // POST COLECCIÓN
 router.post("/", (req, res) => {
