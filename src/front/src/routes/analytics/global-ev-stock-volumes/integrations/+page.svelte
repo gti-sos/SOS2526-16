@@ -11,7 +11,7 @@
 			<a href="./integrations/exportation-stats">Exportation Stats</a>
 		</li>
 		<li>
-			<a href="./integrations/cars">Cars sold rates </a>
+			<a href="./integrations/currencies">Currencies </a>
 		</li>
 		<li>
 			<a href="./integrations/earthquake-points">Earthquake Points </a>
@@ -22,6 +22,14 @@
 		<li>
 			<a href="./integrations/temperatures">Weather</a>
 		</li>
-		
+		<li>
+			<a href="./integrations/universities">Universities</a>
+		</li>
+		<li>
+			<a href="./integrations/pokemons">Pokemons</a>
+		</li>
+		<li>
+			<a href="./integrations/characters">Characters</a>
+		</li>
 	</ul>
 </main>
