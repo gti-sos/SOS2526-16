@@ -13,7 +13,7 @@ let BASE_URL_API = "/api/v1";
 
 // 2. Datos iniciales
 const datos = [
-  { region: 'Australia', category: 'Historical', parameter: 'EV stock share', mode: 'Cars', powertrain: 'EV', year: 2011, unit: 'Percent', value: 0.000039253245, economic_impact: 0 },
+  { region: 'Australia', category: 'Historical', parameter: 'EV stock share', mode: 'Cars', powertrain: 'EV', year: 2022, unit: 'Percent', value: 0.000039253245, economic_impact: 0 },
   { region: 'Finland', category: 'Historical', parameter: 'EV stock share', mode: 'Vans', powertrain: 'EV', year: 2021, unit: 'Percent', value: 0.3, economic_impact: 0 },
   { region: 'Finland', category: 'Historical', parameter: 'EV stock share', mode: 'Buses', powertrain: 'BEV', year: 2022, unit: 'Vehicles', value: 550, economic_impact: 154.9 },
   { region: 'USA', category: 'Projection-STEPS', parameter: 'EV charging points', mode: 'EV', powertrain: 'Publicly available fast', year: 2021, unit: 'Charging Points', value: 22000, economic_impact: 358.64 },
@@ -108,7 +108,7 @@ router.get("/", (req, res) => {
 });
 
 //PROXY FELICIDAD
-router.get(BASE_URL_API + "/proxy/happiness-indices", async (req, res) => {
+router.get("/proxy/happiness-indices", async (req, res) => {
   try {
     const response = await fetch(
       "https://sos2526-15.onrender.com/api/v2/happiness-indices" );
@@ -127,7 +127,7 @@ router.get(BASE_URL_API + "/proxy/happiness-indices", async (req, res) => {
 });
 
 //PROXY MILITARY
-router.get(BASE_URL_API + "/proxy/military-stats", async (req, res) => {
+router.get("/proxy/military-stats", async (req, res) => {
   try {
     const response = await fetch(
       "https://sos2526-13.onrender.com/api/v2/military-stats" );
@@ -141,6 +141,26 @@ router.get(BASE_URL_API + "/proxy/military-stats", async (req, res) => {
 
   } catch (error) {
     console.error("Error en tu proxy de Military:", error);
+    res.status(500).json({ error: "Proxy error" });
+  }
+});
+
+//PROXY DIVISAS
+router.get("/proxy/divisas", async (req, res) => {
+  try {
+    const response = await fetch(
+      "https://api.frankfurter.app/latest?from=EUR"
+    );
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: "Error en la API de Divisas" });
+    }
+
+    const data = await response.json();
+    res.json(data);
+
+  } catch (error) {
+    console.error("Error en tu proxy de Divisas:", error);
     res.status(500).json({ error: "Proxy error" });
   }
 });

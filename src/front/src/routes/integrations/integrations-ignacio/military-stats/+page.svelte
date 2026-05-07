@@ -22,7 +22,7 @@
 
             // 2. Hacemos fetch a tu API y a la del compañero
             const resMisDatos = await fetch('/api/v1/global-ev-sales');
-            const resMilitares = await fetch('/api/v1/proxy/military-stats');
+            const resMilitares = await fetch('/api/v1/global-ev-sales/proxy/military-stats');
 
             if (!resMisDatos.ok || !resMilitares.ok) {
                 throw new Error('Error al conectar con una de las APIs');
@@ -60,6 +60,7 @@
                 cargando = false;
                 return;
             }
+            cargando = false;
 
             // 4. Dibujar la gráfica Radar con Chart.js
             new window.Chart(chartContainer, {
@@ -112,12 +113,8 @@
 </svelte:head>
 
 <main style="max-width: 900px; margin: 0 auto; padding: 20px; text-align: center; font-family: sans-serif;">
-    <h2>Comparativa: Ventas EV vs Gasto Militar</h2>
-    <p style="color: #666; margin-bottom: 30px;">Integración de la API <strong>global-ev-sales</strong> con la API <strong>military-stats</strong> (Grupo 13)</p>
-
-    {#if cargando}
-        <div style="padding: 20px; font-size: 18px; color: #33b5e5;">Cargando datos y generando gráfica...</div>
-    {/if}
+    <h2>Correlación: Military Stats vs Ventas de EV</h2>
+    <p style="color: #666; margin-bottom: 30px;">Integración de <strong>global-ev-sales</strong> con la API de <strong>Military Stats</strong> mediante Proxy</p>
 
     {#if errorMensaje}
         <div style="padding: 15px; background-color: #ff4444; color: white; border-radius: 5px; margin-bottom: 20px;">
@@ -125,11 +122,18 @@
         </div>
     {/if}
 
-    <div style="position: relative; height: 500px; width: 100%; display: {cargando || errorMensaje ? 'none' : 'block'};">
+    <div style="position: relative; height: 500px; width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 10px; background-color: #f9f9f9;">
+        
+        {#if cargando}
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px; color: #00C851; font-weight: bold;">
+               
+            </div>
+        {/if}
+
         <canvas bind:this={chartContainer}></canvas>
     </div>
 
     <div style="margin-top: 30px;">
-        <a href="/integrations" style="padding: 10px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 5px;">← Volver a Integraciones</a>
+        <a href="/integrations" style="padding: 10px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">← Volver a Integraciones</a>
     </div>
 </main>

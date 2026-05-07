@@ -168,6 +168,8 @@ app.get(BASE_URL_API + "/proxy/usa-gas-price", async (req, res) => {
         method: "GET",
         headers: {
           "x-rapidapi-host": "gas-price.p.rapidapi.com",
+
+          //2241ca04a1mshb85c854e3926485p13864bjsn528c07811634
           "x-rapidapi-key": "e82db419f6msh0f009c1edf1ac68p11b73bjsnb01888067a94"
         }
       }
