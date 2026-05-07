@@ -81,7 +81,7 @@
 		<a href="./analytics/global-ev-charging-infrastructures"> Gráfica Javier </a>
 	</li>
 
-	<h2>Integraciones</h2>
+	<h2>Integraciones de Apis</h2>
 	<li>
 		<a href="./integrations"> Integraciones </a>
 	</li>
