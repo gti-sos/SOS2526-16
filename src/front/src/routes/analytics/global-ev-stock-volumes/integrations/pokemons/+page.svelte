@@ -44,7 +44,7 @@
             // 4. RENDERIZADO
             Highcharts.chart('container-variable-pie', {
                 chart: {
-                    type: 'variablepie', // REQUISITO: Tipo no utilizado (Radio Variable)
+                    type: 'variablepie', 
                     backgroundColor: '#fdfdfd'
                 },
                 title: { text: 'Comparativa de Poder y Peso Pokémon' },
@@ -81,41 +81,3 @@
     {/if}
 
     <div id="container-variable-pie"></div>
-
-    <!-- REQUISITO: Uso textual mediante tabla HTML -->
-    <div style="margin-top: 30px;">
-        <h3>Estadísticas Detalladas (Uso Textual)</h3>
-        <table border="1" style="width: 80%; margin: 0 auto; border-collapse: collapse; background: white;">
-            <thead>
-                <tr style="background-color: #333; color: white;">
-                    <th>Nombre</th>
-                    <th>Experiencia Base</th>
-                    <th>Peso</th>
-                    <th>Altura</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each pokemonData as p}
-                    <tr>
-                        <td style="font-weight: bold;">{p.name.toUpperCase()}</td>
-                        <td>{p.base_experience} pts</td>
-                        <td>{p.weight} kg</td>
-                        <td>{p.height} m</td>
-                    </tr>
-                {/each}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<style>
-    #container-variable-pie {
-        height: 500px;
-        width: 100%;
-        max-width: 800px;
-        margin: 0 auto;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-    }
-    table td, table th { padding: 10px; text-align: center; }
-</style>
