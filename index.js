@@ -20,9 +20,6 @@ let app = express();
 app.use(express.json());
 app.use(cors());
 
-/* =========================
-   🔐 AUTENTICACIÓN
-========================= */
 
 function verifyToken(req, res, next) {
     if (req.hostname === 'localhost' || req.hostname === '127.0.0.1') {
@@ -50,9 +47,7 @@ function verifyToken(req, res, next) {
     }
 }
 
-/* =========================
-   🔑 LOGIN
-========================= */
+
 
 app.post("/api/v1/global-ev-stock-volumes/login", (req, res) => {
     const { username, password } = req.body;
@@ -70,36 +65,26 @@ app.post("/api/v1/global-ev-stock-volumes/login", (req, res) => {
     }
 });
 
-/* =========================
-   🔹 APIs
-========================= */
+
 
 evChargingInfrastructuresAPI(app);
 app.use("/api/v1/global-ev-sales", salesAPI);
 evStockAPI(app, verifyToken);
 
-/* =========================
-   🔹 VUE (LEGACY)
-========================= */
+
 
 app.use(
     "/global-ev-charging-infrastructures-vue",
     express.static(path.join(__dirname, "frontend-vue/dist"))
 );
 
-/* =========================
-   🔥 SVELTE (IMPORTANTE)
-========================= */
 
-// 🔥 SERVIR ARCHIVOS ESTÁTICOS DEL BUILD
 app.use(express.static(path.join(__dirname, 'src/front/build/client')));
 
-// 🔥 HANDLER DE SVELTE (SSR)
+
 app.use(handler);
 
-/* =========================
-   🚀 SERVER
-========================= */
+
 
 const PORT = process.env.PORT || 3000;
 
