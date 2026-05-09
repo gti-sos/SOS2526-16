@@ -7,7 +7,7 @@
 	let Highcharts;
 	let chart = null;
 
-	// Mapeo de tus países a códigos ISO-A3 (necesarios para el mapa)
+	// Mapeo de los países 
 	const countryMap = {
 		brazil: 'BRA',
 		canada: 'CAN',

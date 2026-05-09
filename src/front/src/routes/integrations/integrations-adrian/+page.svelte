@@ -11,9 +11,6 @@
 			<a href="./integrations-adrian/exportation-stats">Exportation Stats</a>
 		</li>
 		<li>
-			<a href="./integrations-adrian/currencies">Currencies </a>
-		</li>
-		<li>
 			<a href="./integrations-adrian/earthquake-points">Earthquake Points </a>
 		</li>
 			<li>
@@ -21,9 +18,6 @@
 		</li>
 		<li>
 			<a href="./integrations-adrian/temperatures">Weather</a>
-		</li>
-		<li>
-			<a href="./integrations-adrian/universities">Universities</a>
 		</li>
 		<li>
 			<a href="./integrations-adrian/pokemons">Pokemons</a>

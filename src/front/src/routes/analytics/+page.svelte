@@ -51,15 +51,15 @@
                     categories: countries,
                     crosshair: true
                 }],
-                yAxis: [{ // Eje para Ventas (Socio A)
+                yAxis: [{ 
                     labels: { format: '{value} uds', style: { color: Highcharts.getOptions().colors[2] } },
                     title: { text: 'Ventas (Socio A)', style: { color: Highcharts.getOptions().colors[2] } },
                     opposite: true
-                }, { // Eje para Stock (Tú)
+                }, { 
                     gridLineWidth: 0,
                     title: { text: 'Volumen Stock (Tú)', style: { color: Highcharts.getOptions().colors[0] } },
                     labels: { format: '{value} uds', style: { color: Highcharts.getOptions().colors[0] } }
-                }, { // Eje para Infraestructura (Socio B)
+                }, { 
                     gridLineWidth: 0,
                     title: { text: 'Puntos de Carga (Socio B)', style: { color: Highcharts.getOptions().colors[1] } },
                     labels: { format: '{value} pts', style: { color: Highcharts.getOptions().colors[1] } },
@@ -72,7 +72,7 @@
                 },
                 series: [{
                     name: 'Ventas',
-                    type: 'column', // Cumple requisito: No es tipo "line"
+                    type: 'column', 
                     yAxis: 1,
                     data: countries_sales,
                     tooltip: { valueSuffix: ' unidades' }

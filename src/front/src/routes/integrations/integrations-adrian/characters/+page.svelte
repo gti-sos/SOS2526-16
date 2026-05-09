@@ -30,7 +30,7 @@
 
             Highcharts.chart('container-funnel', {
                 chart: { type: 'funnel' },
-                title: { text: 'Distribución de Especies (Rick & Morty)' },
+                title: { text: 'Distribución de Personajes en  Rick & Morty' },
                 plotOptions: {
                     funnel: {
                         dataLabels: { enabled: true, format: '<b>{point.name}</b>: {point.y}' },

@@ -207,24 +207,6 @@ app.get(BASE_URL_API + "/proxy/spacex", async (req, res) => {
     }
 });
 
-// PROXY3
-app.get(BASE_URL_API + "/proxy/usa-population", async (req, res) => {
-    try {
-        const response = await fetch("https://datausa.io/api/data?drilldowns=Nation&measures=Population");
-        
-        if (!response.ok) {
-            return res.status(response.status).json({ error: "Error en DataUSA" });
-        }
-        
-        const data = await response.json();
-        res.json(data); // Reenviamos el JSON al frontend
-    } catch (error) {
-        console.error("Error en el proxy de población:", error);
-        res.status(500).json({ error: "Proxy error" });
-    }
-});
-
-
 
     //Post
     app.post(BASE_URL_API + "/global-ev-stock-volumes", verifyToken, (req, res) => {
