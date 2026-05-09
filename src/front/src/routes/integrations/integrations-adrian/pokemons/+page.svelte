@@ -22,7 +22,7 @@
         try {
             // 1. CARGAR LIBRERÍAS (Necesitamos el módulo variable-pie)
             await loadScript("https://code.highcharts.com/highcharts.js");
-            await loadScript("https://code.highcharts.com/modules/variable-pie.js"); // 👈 TIPO NUEVO
+            await loadScript("https://code.highcharts.com/modules/variable-pie.js");
             await loadScript("https://code.highcharts.com/modules/accessibility.js");
             const Highcharts = window.Highcharts;
 
@@ -47,7 +47,7 @@
                     type: 'variablepie', 
                     backgroundColor: '#fdfdfd'
                 },
-                title: { text: 'Comparativa de Poder y Peso Pokémon' },
+                title: { text: 'Comparativa de Experiencia y Peso Pokémon' },
                 subtitle: { text: 'Ángulo: Experiencia Base | Radio: Peso del Pokémon' },
                 tooltip: {
                     headerFormat: '',
@@ -72,7 +72,7 @@
 </script>
 
 <div style="text-align: center; padding: 20px; font-family: sans-serif;">
-    <h1>Integración Externa: Pokémon (Variable Radius Pie)</h1>
+    <h1>Pokemons</h1>
     </div>
    
 

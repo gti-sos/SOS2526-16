@@ -44,6 +44,6 @@
 </script>
 
 <div style="text-align: center; padding: 20px;">
-    <h1>Integración Externa 5: Rick & Morty (Funnel Chart)</h1>
+    <h1>Rick & Morty</h1>
     <div id="container-funnel" style="height: 500px;"></div>
 </div>
