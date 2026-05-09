@@ -73,11 +73,7 @@
 
 <div style="text-align: center; padding: 20px; font-family: sans-serif;">
     <h1>Integración Externa: Pokémon (Variable Radius Pie)</h1>
-    <p>Visualización avanzada con Highcharts usando <b>fetch</b> directo y <b>CORS abierto</b>.</p></div>
-    
-    {#if isLoading}
-        <p>Invocando Pokémon...</p>
-        <progress></progress>
-    {/if}
+    </div>
+   
 
     <div id="container-variable-pie"></div>

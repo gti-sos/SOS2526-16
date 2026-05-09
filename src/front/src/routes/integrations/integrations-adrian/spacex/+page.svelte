@@ -4,7 +4,6 @@
 
     let isLoading = true;
 
-    // Función para cargar los scripts necesarios de Highcharts
     async function loadScript(src) {
         return new Promise((resolve, reject) => {
             if (document.querySelector(`script[src="${src}"]`)) return resolve();
@@ -20,24 +19,22 @@
         if (!browser) return;
 
         try {
-            // 1. CARGAR LIBRERÍAS (Necesitamos el módulo funnel para la pirámide)
+       
             await loadScript("https://code.highcharts.com/highcharts.js");
             await loadScript("https://code.highcharts.com/modules/funnel.js"); // 👈 NECESARIO PARA PIRÁMIDE
             await loadScript("https://code.highcharts.com/modules/accessibility.js");
             const Highcharts = window.Highcharts;
 
-            // 2. PETICIÓN FETCH A TU PROXY
+            
             const res = await fetch('/api/v1/proxy/spacex');
             const data = await res.json();
             
-            // 3. PROCESAMIENTO DE DATOS
-            // Mapeamos los nombres de las bases y sus intentos de lanzamiento (launch_attempts)
-            // C3 y Highcharts Pyramid esperan una lista de pares [nombre, valor]
+            
             const chartData = data
                 .map(lp => [lp.name, lp.launch_attempts])
                 .sort((a, b) => b[1] - a[1]); // Ordenamos de mayor a menor actividad
 
-            // 4. GENERACIÓN DEL GRÁFICO (Tipo Pirámide)
+           
             Highcharts.chart('spacex-pyramid-container', {
                 chart: {
                     type: 'pyramid', // REQUISITO: No es line, ni bar, ni map
@@ -78,21 +75,12 @@
 
 <div style="text-align: center; padding: 20px; font-family: sans-serif;">
     <h1>Integración Externa 5: SpaceX Launchpads</h1>
-    <p>Esta visualización utiliza un gráfico de tipo <b>Pirámide</b> a través de un <b>Proxy Propio</b>.</p>
     
-    {#if isLoading}
-        <div style="padding: 50px;">
-            <p>Conectando con la API de SpaceX...</p>
-            <progress></progress>
-        </div>
-    {/if}
+    
 
     <!-- Contenedor del Gráfico -->
     <div id="spacex-pyramid-container"></div>
 
-    <div style="margin-top: 30px; font-size: 0.85em; color: #666; border-top: 1px solid #eee; padding-top: 10px;">
-        <p>Datos obtenidos mediante petición <i>fetch</i> al proxy del servidor. Biblioteca: Highcharts (Módulo Funnel).</p>
-    </div>
 </div>
 
 <style>

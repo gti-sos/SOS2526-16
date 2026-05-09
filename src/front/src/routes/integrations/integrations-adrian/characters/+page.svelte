@@ -14,13 +14,13 @@
         if (!browser) return;
         try {
             await loadScript("https://code.highcharts.com/highcharts.js");
-            await loadScript("https://code.highcharts.com/modules/funnel.js"); // 👈 Necesario para el embudo
+            await loadScript("https://code.highcharts.com/modules/funnel.js"); 
             const Highcharts = window.Highcharts;
 
             const res = await fetch('https://rickandmortyapi.com/api/character');
             const data = await res.json();
             
-            // Contamos cuántos hay de cada especie
+            
             const counts = data.results.reduce((acc, char) => {
                 acc[char.species] = (acc[char.species] || 0) + 1;
                 return acc;
@@ -29,7 +29,7 @@
             const chartData = Object.entries(counts).sort((a, b) => b[1] - a[1]);
 
             Highcharts.chart('container-funnel', {
-                chart: { type: 'funnel' }, // REQUISITO: Tipo embudo (no line)
+                chart: { type: 'funnel' },
                 title: { text: 'Distribución de Especies (Rick & Morty)' },
                 plotOptions: {
                     funnel: {

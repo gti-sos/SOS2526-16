@@ -3,7 +3,6 @@
 
     let Highcharts;
 
-    // Función de carga dinámica de scripts (estilo de tu compañero)
     function loadScript(src) {
         return new Promise((resolve, reject) => {
             if (document.querySelector(`script[src="${src}"]`)) return resolve();
@@ -17,17 +16,16 @@
 
     onMount(async () => {
         try {
-            // 1. CARGAR LIBRERÍAS
+    
             await loadScript("https://code.highcharts.com/highcharts.js");
             await loadScript("https://code.highcharts.com/modules/accessibility.js");
             Highcharts = window.Highcharts;
 
-            // 2. CARGAR DATOS DE LA API
+            
             const res = await fetch("https://sos2526-13.onrender.com/api/v2/exportations-stats");
             const data = await res.json();
 
-            // 3. PREPARAR DATOS PARA EL GRÁFICO DE DONUT
-            // Mapeamos para tener: { name: "País Receptor", y: valor_del_pedido }
+           
             const chartData = data.map(d => ({
                 name: d.recipient,
                 y: Number(d.tiv_total_order),
@@ -35,7 +33,7 @@
                 year: d.year_of_order   // Guardamos extra para el tooltip
             }));
 
-            // 4. RENDERIZAR WIDGET
+
             Highcharts.chart("container-orders", {
                 chart: {
                     type: "pie" 
@@ -77,6 +75,6 @@
 </script>
 
 <div style="text-align: center; padding: 20px;">
-    <h1>Integración SOS: Pedidos Internacionales</h1>
+    <h1>Pedidos Internacionales de Armamento Militar</h1>
     <div id="container-orders" style="width: 100%; max-width: 800px; height: 500px; margin: 0 auto;"></div>
 </div>
