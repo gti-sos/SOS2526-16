@@ -74,7 +74,7 @@
 </script>
 
 <div style="text-align: center; padding: 20px; font-family: sans-serif;">
-    <h1>Integración Externa 5: SpaceX Launchpads</h1>
+    <h1>SpaceX Launchpads</h1>
     
     
 
