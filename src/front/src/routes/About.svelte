@@ -85,3 +85,14 @@
 	<li>
 		<a href="./integrations"> Integraciones </a>
 	</li>
+
+  <h2>Videos</h2>
+  <li>
+    <a href="https://youtu.be/ndvM6txQOnw" target="_blank"> Video Javier </a>
+  </li>
+  <li>
+    <a href="" target="_blank"> Video Adrián </a>
+  </li>
+  <li>
+    <a href="https://youtu.be/S-t9ulEGKkA" target="_blank"> Video Ignacio </a>
+  </li>
