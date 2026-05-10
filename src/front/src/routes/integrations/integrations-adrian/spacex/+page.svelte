@@ -21,7 +21,7 @@
         try {
        
             await loadScript("https://code.highcharts.com/highcharts.js");
-            await loadScript("https://code.highcharts.com/modules/funnel.js"); // 👈 NECESARIO PARA PIRÁMIDE
+            await loadScript("https://code.highcharts.com/modules/funnel.js"); 
             await loadScript("https://code.highcharts.com/modules/accessibility.js");
             const Highcharts = window.Highcharts;
 
