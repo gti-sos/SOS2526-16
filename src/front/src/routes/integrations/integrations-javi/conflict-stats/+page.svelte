@@ -2,111 +2,168 @@
     import { onMount } from "svelte";
 
     onMount(async () => {
-        const response = await fetch(
+        // 1. Llamada GET a la API del compañero
+        const conflictData = await fetch(
             "https://sos2526-13-production.up.railway.app/api/v2/conflict-stats"
-        );
-        const data = await response.json();
+        ).then(r => r.json());
 
-        const years = [...new Set(data.map(d => d.year))].sort((a, b) => a - b);
-        const locations = [...new Set(data.map(d => d.location))];
+        // 2. Llamada GET a tu propia API
+        const evData = await fetch(
+            "/api/v1/global-ev-charging-infrastructures/"
+        ).then(r => r.json());
 
-        const series = locations.map(location => ({
-            name: location,
+        // Extraer todos los años únicos de ambas APIs y ordenarlos
+        const years = [
+            ...new Set([
+                ...conflictData.map(d => Number(d.year)),
+                ...evData.map(d => Number(d.year))
+            ])
+        ].sort((a, b) => a - b);
+
+        const locations = [...new Set(conflictData.map(d => d.location))];
+        const countries = [...new Set(evData.map(d => d.country))];
+
+        // SERIES DEL COMPAÑERO (Asignadas al Eje Y izquierdo: yAxis: 0)
+        const conflictSeries = locations.map(location => ({
+            name: `Conflict - ${location}`,
+            type: "area",
+            yAxis: 0, // Asignar al primer eje Y
+            fillOpacity: 0.3, // Transparencia para que se vean los cruces de áreas
             data: years.map(year => {
-                const conflicts = data.filter(
-                    d => d.location === location && d.year === year
+                const rows = conflictData.filter(
+                    d => d.location === location && Number(d.year) === year
                 );
 
-                if (conflicts.length === 0) {
-                    return {
-                        y: 0,
-                        conflicts: []
-                    };
-                }
-
-                const avgIntensity =
-                    conflicts.reduce((sum, c) => sum + Number(c.intensity_level), 0) /
-                    conflicts.length;
-
-                const conflictTypes = [
-                    ...new Set(conflicts.map(c => c.conflict_type))
-                ].join(", ");
-
-                const startPrecisions = [
-                    ...new Set(conflicts.map(c => c.start_precision))
-                ].join(", ");
-
                 return {
-                    y: conflicts.length,
-                    conflicts,
-                    avgIntensity: avgIntensity.toFixed(2),
-                    conflictTypes,
-                    startPrecisions
+                    y: rows.length,
+                    custom: {
+                        source: "conflict",
+                        rows
+                    }
                 };
             })
         }));
 
+        // SERIES DE TU API (Asignadas al Eje Y derecho: yAxis: 1)
+        const evSeries = countries.map(country => ({
+            name: `EV - ${country}`,
+            type: "area",
+            yAxis: 1, // Asignar al segundo eje Y
+            fillOpacity: 0.3, 
+            data: years.map(year => {
+                const row = evData.find(
+                    d => d.country === country && Number(d.year) === year
+                );
+
+                return {
+                    y: row ? Number(row.charging_point) : null,
+                    custom: {
+                        source: "ev",
+                        row
+                    }
+                };
+            })
+        }));
+
+        // Renderizar el gráfico
         Highcharts.chart("container", {
             chart: {
                 type: "area"
             },
-
             title: {
-                text: "Distribución porcentual de conflictos por localización"
+                text: "Conflict Stats + EV Infrastructure"
             },
-
             subtitle: {
-                text: "Datos obtenidos de la API conflict-stats"
+                text: "Datos mostrados de forma independiente (Eje Izquierdo: Conflictos | Eje Derecho: Puntos EV)"
             },
-
             xAxis: {
                 categories: years,
                 title: {
-                    text: "Año"
+                    text: "Year"
                 }
             },
-
-            yAxis: {
-                labels: {
-                    format: "{value}%"
+            // CONFIGURACIÓN DE DOBLE EJE Y
+            yAxis: [
+                { // yAxis: 0 (Izquierda)
+                    title: {
+                        text: "Nº de Conflictos"
+                    },
+                    min: 0
                 },
-                title: {
-                    enabled: false
+                { // yAxis: 1 (Derecha)
+                    title: {
+                        text: "Puntos de Carga (Charging Points)"
+                    },
+                    opposite: true, // Esto pone el eje a la derecha
+                    min: 0
                 }
-            },
-
+            ],
             tooltip: {
+                useHTML: true,
+                shared: false, // Mejor false para que no mezcle ambos tooltips si pasas por el medio
                 formatter: function () {
-                    if (!this.point || this.point.y === 0) {
+                    const custom = this.point.custom;
+
+                    // DATOS CONFLICTOS
+                    if (custom && custom.source === "conflict") {
+                        if (custom.rows.length === 0) {
+                            return `
+                                <b>${this.series.name}</b><br/>
+                                Año: ${this.x}<br/>
+                                Sin conflictos
+                            `;
+                        }
+
                         return `
                             <b>${this.series.name}</b><br/>
                             Año: ${this.x}<br/>
-                            No hay conflictos registrados
+                            Nº conflictos: ${this.y}<br/><br/>
+                            ${custom.rows.map(r => `
+                                Intensidad: ${r.intensity_level}<br/>
+                                Tipo conflicto: ${r.conflict_type}<br/>
+                                Precisión inicio: ${r.start_precision}<br/>
+                            `).join("<br/>")}
                         `;
                     }
 
-                    return `
-                        <b>${this.series.name}</b><br/>
-                        Año: ${this.x}<br/>
-                        Nº de conflictos: ${this.point.y}<br/>
-                        Porcentaje: ${this.percentage.toFixed(1)}%<br/>
-                        Intensidad media: ${this.point.avgIntensity}<br/>
-                        Tipos de conflicto: ${this.point.conflictTypes}<br/>
-                        Precisión de inicio: ${this.point.startPrecisions}
-                    `;
+                    // DATOS EV
+                    if (custom && custom.source === "ev") {
+                        if (!custom.row) {
+                            return `
+                                <b>${this.series.name}</b><br/>
+                                Año: ${this.x}<br/>
+                                Sin datos EV
+                            `;
+                        }
+
+                        const d = custom.row;
+                        return `
+                            <b>${this.series.name}</b><br/>
+                            Año: ${d.year}<br/><br/>
+                            Charging points: ${d.charging_point}<br/>
+                            AC slow: ${d.ac_slow}<br/>
+                            DC fast: ${d.dc_fast}<br/>
+                            Total power kW: ${d.total_power_kw}
+                        `;
+                    }
+
+                    return "No data";
                 }
             },
-
             plotOptions: {
                 area: {
-                    stacking: "percent",
                     marker: {
-                        enabled: false
+                        enabled: true
                     }
                 }
             },
-
-            series
+            legend: {
+                enabled: true
+            },
+            series: [
+                ...conflictSeries,
+                ...evSeries
+            ]
         });
     });
 </script>
@@ -115,7 +172,7 @@
     <script src="https://code.highcharts.com/highcharts.js"></script>
 </svelte:head>
 
-<h1>Conflict Stats</h1>
+<h1>Conflict Stats + EV Infrastructure</h1>
 
 <div id="container"></div>
 
@@ -127,7 +184,7 @@
 
     #container {
         width: 100%;
-        height: 500px;
+        height: 700px;
         margin: 0 auto;
     }
 </style>

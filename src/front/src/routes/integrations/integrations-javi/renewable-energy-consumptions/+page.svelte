@@ -17,71 +17,163 @@
         await loadScript("https://code.highcharts.com/highcharts.js");
         await loadScript("https://code.highcharts.com/modules/heatmap.js");
 
-        const res = await fetch("https://api-sos.pablogamero.com/api/v1/renewable-energy-consumptions?limit=100");
-        const data = await res.json();
+        // 1. OBTENER DATOS
+        const energyRes = await fetch("https://api-sos.pablogamero.com/api/v1/renewable-energy-consumptions?limit=100");
+        const energyData = await energyRes.json();
 
-        const countries = [...new Set(data.map(d => d.country))];
-        const years = [...new Set(data.map(d => d.year))].sort((a, b) => a - b);
+        // Llamada a tu API (Asegúrate de que la ruta es correcta si usas otro puerto)
+        const evRes = await fetch("/api/v1/global-ev-charging-infrastructures/");
+        const evData = await evRes.json();
 
-        const heatmapData = data.map(d => {
-            const x = years.indexOf(d.year);
-            const y = countries.indexOf(d.country);
+        // ¡CHIVATO PARA LA CONSOLA! (Pulsa F12 en tu navegador y mira qué sale aquí)
+        console.log("Datos de Energía:", energyData.length);
+        console.log("MIS DATOS EV:", evData);
 
-            const total =
-                Number(d.wind) +
-                Number(d.hydro) +
-                Number(d.solar) +
-                Number(d.other);
+        // 2. EXTRAER AÑOS Y PAÍSES
+        const years = [
+            ...new Set([
+                ...energyData.map(d => Number(d.year)),
+                ...evData.map(d => Number(d.year))
+            ])
+        ].sort((a, b) => a - b);
 
-            return [x, y, total];
+        const energyCountries = [...new Set(energyData.map(d => d.country))];
+        const evCountries = [...new Set(evData.map(d => d.country))];
+
+        const combinedYCategories = [
+            ...energyCountries.map(c => `${c} (Energy)`),
+            ...evCountries.map(c => `${c} (EV)`)
+        ];
+
+        // 3. SANEAR DATOS DE ENERGÍA (Azules)
+        const heatmapEnergyData = [];
+        energyCountries.forEach(country => {
+            const yIndex = combinedYCategories.indexOf(`${country} (Energy)`);
+            
+            years.forEach((year, xIndex) => {
+                const found = energyData.find(d => d.country === country && Number(d.year) === year);
+                let total = null;
+
+                if (found) {
+                    total = Number(found.wind) + Number(found.hydro) + Number(found.solar) + Number(found.other);
+                }
+
+                heatmapEnergyData.push({
+                    x: xIndex,
+                    y: yIndex,
+                    value: total,
+                    custom: found || { country, year, empty: true },
+                    source: "energy"
+                });
+            });
         });
 
+        // 4. SANEAR DATOS DE EV (Amarillos)
+        const heatmapEVData = [];
+        evCountries.forEach(country => {
+            const yIndex = combinedYCategories.indexOf(`${country} (EV)`);
+            
+            years.forEach((year, xIndex) => {
+                const found = evData.find(d => d.country === country && Number(d.year) === year);
+                let totalPoints = null;
+
+                if (found) {
+                    totalPoints = Number(found.charging_point);
+                }
+
+                heatmapEVData.push({
+                    x: xIndex,
+                    y: yIndex,
+                    value: totalPoints,
+                    custom: found || { country, year, empty: true },
+                    source: "ev"
+                });
+            });
+        });
+
+        // 5. PINTAR LA GRÁFICA
         Highcharts.chart("container", {
             chart: {
-                type: "heatmap"
+                type: "heatmap",
+                backgroundColor: "#fcfcfc"
             },
-
             title: {
-                text: "Renewable Energy Consumption (All Countries & Years)"
+                text: "Renewable Energy (Azul) vs EV Infrastructure (Amarillo)"
             },
-
             xAxis: {
                 categories: years,
                 title: { text: "Year" }
             },
-
             yAxis: {
-                categories: countries,
+                categories: combinedYCategories,
                 title: { text: "Country" },
-                reversed: true
-            },
-
-            colorAxis: {
-                min: 0,
-                minColor: "#FFFFFF",
-                maxColor: "#007bff"
-            },
-
-            tooltip: {
-                formatter: function () {
-                    return `
-                        <b>${countries[this.point.y]}</b><br/>
-                        Año: ${years[this.point.x]}<br/>
-                        Consumo total: ${this.point.value}
-                    `;
+                reversed: true,
+                // Esto fuerza a que se muestren todos los nombres sin ocultarlos
+                labels: {
+                    step: 1
                 }
             },
+            colorAxis: [
+                { // Escala 0: Energía (Azules)
+                    min: 0,
+                    minColor: "#e6f2ff",
+                    maxColor: "#005ce6",
+                    nullColor: '#f4f4f4' 
+                },
+                { // Escala 1: EV (Amarillos)
+                    min: 0,
+                    minColor: "#ffffe6", // Amarillo muy clarito
+                    maxColor: "#ffcc00", // Amarillo fuerte/naranja
+                    nullColor: '#f4f4f4'
+                }
+            ],
+            tooltip: {
+                useHTML: true,
+                formatter: function () {
+                    const custom = this.point.custom;
 
-            series: [{
-                name: "Energy",
-                borderWidth: 0,
-                data: heatmapData
-            }]
+                    if (custom.empty) {
+                        return `<b>${custom.country.toUpperCase()}</b><br/>Año: ${custom.year}<br/><i>Sin datos registrados</i>`;
+                    }
+
+                    if (this.point.source === "energy") {
+                        return `
+                            <b>${custom.country.toUpperCase()} (Energy)</b><br/>
+                            Año: ${custom.year}<br/><br/>
+                            Consumo Total: <b>${this.point.value.toFixed(2)}</b>
+                        `;
+                    }
+
+                    if (this.point.source === "ev") {
+                        return `
+                            <b>${custom.country.toUpperCase()} (EV)</b><br/>
+                            Año: ${custom.year}<br/><br/>
+                            Charging Points: <b>${this.point.value}</b>
+                        `;
+                    }
+                }
+            },
+            series: [
+                {
+                    name: "Energy Consumption",
+                    borderWidth: 1,
+                    borderColor: '#ffffff',
+                    data: heatmapEnergyData,
+                    colorAxis: 0
+                },
+                {
+                    name: "EV Charging Points",
+                    borderWidth: 1,
+                    borderColor: '#ffffff',
+                    data: heatmapEVData,
+                    colorAxis: 1 // Conecta con los amarillos
+                }
+            ]
         });
     });
 </script>
 
-<h1>Heatmap Renewable Energy</h1>
+<h1>Heatmap: Energy & EV Infrastructure</h1>
 
 <div id="container"></div>
 
@@ -89,11 +181,13 @@
     h1 {
         text-align: center;
         font-family: Arial, sans-serif;
+        color: #333;
     }
 
     #container {
         width: 100%;
-        height: 700px;
+        /* Le damos bastante altura para que quepan todos los países */
+        height: 1200px; 
         margin: 0 auto;
     }
 </style>
