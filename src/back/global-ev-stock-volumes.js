@@ -183,7 +183,16 @@ function evStockAPI(app, verifyToken) {
         });
     });
 
-
+//PROXY
+app.get("/api/v1/proxy/exportation-stats", async (req, res) => {
+    try {
+        const response = await fetch("https://sos2526-13.onrender.com/api/v2/exportations-stats");
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: "Fallo de conexión" });
+    }
+});
 
 // PROXY
 app.get(BASE_URL_API + "/proxy/map-data", async (req, res) => {
@@ -204,6 +213,21 @@ app.get(BASE_URL_API + "/proxy/spacex", async (req, res) => {
         res.json(data);
     } catch (error) {
         res.status(500).json({ error: "Fallo en proxy de SpaceX" });
+    }
+});
+
+// PROXY
+app.get(BASE_URL_API + "/proxy/social-drinking-behaviors", async (req, res) => {
+    try {
+        const response = await fetch("https://sos2526-25.onrender.com/api/v2/social-drinking-behaviors");
+        if (!response.ok) {
+            return res.status(response.status).json({ error: "La API del socio no responde" });
+        }
+        const data = await response.json();
+        res.json(data); // Enviamos los datos al frontend
+    } catch (error) {
+        console.error("Error en el proxy de alcohol:", error);
+        res.status(500).json({ error: "Proxy error" });
     }
 });
 
