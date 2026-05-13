@@ -85,7 +85,7 @@
     <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 15px;">
         
         <p><b>Ubicación:</b> Sevilla, España</p>
-        <p><b>Temperatura:</b> {temperature} °C</p>
+       
     </div>
 </div>
 

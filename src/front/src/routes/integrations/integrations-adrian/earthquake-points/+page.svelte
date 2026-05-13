@@ -50,7 +50,7 @@
                     backgroundColor: '#f0f8ff' 
                 },
                 title: { text: 'Actividad Sísmica Global (Últimas 24h)' },
-                subtitle: { text: 'Integración externa vía Proxy Propio | Biblioteca: Highcharts' },
+                
                 
                 mapNavigation: {
                     enabled: true,
