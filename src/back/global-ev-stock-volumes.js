@@ -190,7 +190,7 @@ app.get("/api/v1/proxy/exportation-stats", async (req, res) => {
         const data = await response.json();
         res.json(data);
     } catch (error) {
-        res.status(500).json({ error: "Fallo de conexión" });
+        res.status(500).json({ error: "Error en el proxy" });
     }
 });
 
