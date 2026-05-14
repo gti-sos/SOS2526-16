@@ -4,7 +4,7 @@
     onMount(async () => {
         // 1. Llamada GET a la API del compañero
         const conflictData = await fetch(
-            "https://sos2526-13-production.up.railway.app/api/v2/conflict-stats"
+            "https://sos2526-13.onrender.com/api/v2/conflict-stats"
         ).then(r => r.json());
 
         // 2. Llamada GET a tu propia API
