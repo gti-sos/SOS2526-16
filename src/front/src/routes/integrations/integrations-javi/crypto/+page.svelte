@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
 
+    // Función para cargar scripts de forma dinámica
     function loadScript(src) {
         return new Promise((resolve, reject) => {
             if (document.querySelector(`script[src="${src}"]`)) {
@@ -16,6 +17,7 @@
         });
     }
 
+    // Cargar Highcharts y luego obtener datos y crear el gráfico
     onMount(async () => {
         await loadScript("https://code.highcharts.com/highcharts.js");
         await loadScript("https://code.highcharts.com/highcharts-more.js");
@@ -31,6 +33,9 @@
 
         console.log("EXCHANGES DATA:", data);
 
+        // Tomamos los top 20 exchanges por volumen, filtrando 
+        // aquellos con volumen o pares activos igual a 0 para evitar
+        //  mostrar burbujas sin datos
         const top20 = data
             .filter(d =>
                 Number(d.volume_usd) > 0 &&
@@ -112,16 +117,3 @@
 <h1>Crypto Exchanges Bubble Chart</h1>
 
 <div id="container"></div>
-
-<style>
-    h1 {
-        text-align: center;
-        font-family: Arial, sans-serif;
-    }
-
-    #container {
-        width: 100%;
-        height: 650px;
-        margin: 0 auto;
-    }
-</style>

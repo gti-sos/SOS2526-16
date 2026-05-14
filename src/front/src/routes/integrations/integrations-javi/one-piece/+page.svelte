@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
 
+    // Función para cargar scripts de forma dinámica
     function loadScript(src) {
         return new Promise((resolve, reject) => {
             if (document.querySelector(`script[src="${src}"]`)) return resolve();
@@ -13,6 +14,7 @@
         });
     }
 
+    //
     function loadCss(href) {
         if (document.querySelector(`link[href="${href}"]`)) return;
 
@@ -39,6 +41,7 @@
         const res = await fetch("https://api.api-onepiece.com/v2/characters/en");
         const characters = await res.json();
 
+        // Filtrar personajes con edad y recompensa válida, y preparar los datos para el gráfico
         const validCharacters = characters
             .map(c => ({
                 name: c.name,
@@ -50,6 +53,7 @@
             .filter(c => c.age > 0 && c.bounty > 0)
             .sort((a, b) => a.bounty - b.bounty);
 
+        //Preparar las series para el gráfico, asignando el bounty al eje X y la edad al eje Y
         const bountyX = ["bounty_x", ...validCharacters.map(c => c.bounty)];
         const agesY = ["characters", ...validCharacters.map(c => c.age)];
 

@@ -21,11 +21,11 @@
         const energyRes = await fetch("https://api-sos.pablogamero.com/api/v1/renewable-energy-consumptions?limit=100");
         const energyData = await energyRes.json();
 
-        // Llamada a tu API (Asegúrate de que la ruta es correcta si usas otro puerto)
+        // Llamada a mi api
         const evRes = await fetch("/api/v1/global-ev-charging-infrastructures/");
         const evData = await evRes.json();
 
-        // ¡CHIVATO PARA LA CONSOLA! (Pulsa F12 en tu navegador y mira qué sale aquí)
+        
         console.log("Datos de Energía:", energyData.length);
         console.log("MIS DATOS EV:", evData);
 
@@ -37,27 +37,31 @@
             ])
         ].sort((a, b) => a - b);
 
+        // Extraer países únicos para cada dataset para crear categorías en el eje Y
         const energyCountries = [...new Set(energyData.map(d => d.country))];
         const evCountries = [...new Set(evData.map(d => d.country))];
 
+        // Combinar ambos conjuntos de países para tener categorías completas en el eje Y, diferenciando entre energía y EV
         const combinedYCategories = [
             ...energyCountries.map(c => `${c} (Energy)`),
             ...evCountries.map(c => `${c} (EV)`)
         ];
 
-        // 3. SANEAR DATOS DE ENERGÍA (Azules)
+        //Data para el heatmap de energía (Azul)
         const heatmapEnergyData = [];
         energyCountries.forEach(country => {
             const yIndex = combinedYCategories.indexOf(`${country} (Energy)`);
             
+            // Para cada año, buscar el consumo total de energía renovable (suma de wind, hydro, solar y other) para ese país y año
             years.forEach((year, xIndex) => {
                 const found = energyData.find(d => d.country === country && Number(d.year) === year);
                 let total = null;
 
+                // Si se encuentra un registro para ese país y año, sumar las fuentes de energía renovable para obtener el consumo total
                 if (found) {
                     total = Number(found.wind) + Number(found.hydro) + Number(found.solar) + Number(found.other);
                 }
-
+                // Agregar el punto al dataset del heatmap, diferenciando entre energía y EV mediante la propiedad "source"
                 heatmapEnergyData.push({
                     x: xIndex,
                     y: yIndex,
@@ -68,11 +72,11 @@
             });
         });
 
-        // 4. SANEAR DATOS DE EV (Amarillos)
+        //Data para el heatmap de EV (Amarillo)
         const heatmapEVData = [];
         evCountries.forEach(country => {
             const yIndex = combinedYCategories.indexOf(`${country} (EV)`);
-            
+            // Para cada año, buscar el número de puntos de carga para ese país y año
             years.forEach((year, xIndex) => {
                 const found = evData.find(d => d.country === country && Number(d.year) === year);
                 let totalPoints = null;

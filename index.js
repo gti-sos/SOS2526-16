@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+//Importar apis
 import { evChargingInfrastructuresAPI } from "./src/back/global-ev-charging-infrastructures.js";
 import salesAPI from "./src/back/global-ev-sales.js";
 import { evStockAPI } from './src/back/global-ev-stock-volumes.js';
@@ -66,7 +67,7 @@ app.post("/api/v1/global-ev-stock-volumes/login", (req, res) => {
 });
 
 
-
+//Uso de las APIs
 evChargingInfrastructuresAPI(app);
 app.use("/api/v1/global-ev-sales", salesAPI);
 evStockAPI(app, verifyToken);
@@ -87,7 +88,7 @@ app.use(handler);
 
 
 const PORT = process.env.PORT || 3000;
-
+// Iniciar el servidor
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

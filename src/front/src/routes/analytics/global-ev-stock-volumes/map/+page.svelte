@@ -112,7 +112,7 @@
 
 	onMount(async () => {
 		try {
-			// 1. Cargar librerías de Mapas
+			// Cargamos librerías
 			await Promise.all([
 				loadScript('https://code.highcharts.com/maps/highmaps.js'),
 				loadScript('https://code.highcharts.com/modules/accessibility.js')
@@ -120,7 +120,7 @@
 
 			Highcharts = window.Highcharts;
 
-			// 2. Cargar tus datos (Asegúrate de que la ruta sea correcta)
+			// Cargamos los datos
 			await fetch('/api/v1/global-ev-stock-volumes/loadInitialData');
 			const res = await fetch('/api/v1/global-ev-stock-volumes');
 
@@ -131,7 +131,7 @@
 
 			data = await res.json();
 
-			// 3. Generar lista de años única y ordenada
+			// Generamos lista de años y la ordenamos 
 			years = [...new Set(data.map(d => Number(d.year)))]
 				.filter(y => !isNaN(y))
 				.sort((a, b) => a - b);

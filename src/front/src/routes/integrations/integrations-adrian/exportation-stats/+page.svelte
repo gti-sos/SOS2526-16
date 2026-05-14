@@ -19,13 +19,13 @@
     onMount(async () => {
         if (!browser) return;
         try {
-            // 1. CARGAR LIBRERÍAS
+            // Cargar librerías
             await loadScript("https://code.highcharts.com/highcharts.js");
             await loadScript("https://code.highcharts.com/modules/accessibility.js");
             Highcharts = window.Highcharts;
 
-            // 2. FETCH DE LAS APIS
-            // Cargamos tus datos
+            // Fetch
+            // Carga de datos
             await fetch("/api/v1/global-ev-stock-volumes/loadInitialData").catch(() => {});
             
             const resStock = await fetch("/api/v1/global-ev-stock-volumes");
@@ -38,7 +38,7 @@
             const stockData = await resStock.json();
             const weaponsData = await resWeapons.json();
 
-            // 3. INTEGRACIÓN POR AÑO
+            // Integramos los datos por año
             const allYears = [...new Set([
                 ...stockData.map(s => Number(s.year)),
                 ...weaponsData.map(w => Number(w.year_of_order))
@@ -61,7 +61,7 @@
                 };
             }).filter(item => item.y > 0 || item.evStock > 0);
 
-            // 4. RENDERIZADO
+            // Cargamos gráfico
             if (Highcharts && chartContainer && integratedYears.length > 0) {
                 Highcharts.chart(chartContainer, {
                     chart: { type: "pie" },

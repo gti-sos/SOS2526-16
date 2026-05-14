@@ -6,6 +6,7 @@
 
   const API_URL = "https://api.restful-api.dev/objects";
 
+  // Función para determinar la marca a partir del nombre del dispositivo
   function getBrand(name) {
     const lower = name.toLowerCase();
     if (lower.includes("apple")) return "Apple";
@@ -14,37 +15,45 @@
     return "Other";
   }
 
+  // Función para extraer la capacidad en GB de diferentes formatos posibles
   function getCapacity(item) {
     if (item.data?.capacity) {
       const match = String(item.data.capacity).match(/\d+/);
       return match ? Number(match[0]) : 0;
     }
 
+    // Si el campo específico de capacidad en GB existe, úsalo directamente
     if (item.data?.["capacity GB"]) {
       return Number(item.data["capacity GB"]);
     }
 
+    // Si el nombre del dispositivo contiene la capacidad, extráela
     const match = item.name.match(/(\d+)\s?GB/i);
     return match ? Number(match[1]) : 0;
   }
 
+  // Función para agrupar los dispositivos por marca y preparar la serie para Highcharts
   function buildSeries(devices) {
     const grouped = {};
 
+    // Agrupar dispositivos por marca y sacar su capacidad para el tamaño de la burbuja
     devices.forEach((item) => {
       const capacity = getCapacity(item);
       if (!capacity) return;
 
       const brand = getBrand(item.name);
 
+      // Inicializar el grupo si no existe
       if (!grouped[brand]) grouped[brand] = [];
 
+      // Agregar el dispositivo al grupo correspondiente con su capacidad
       grouped[brand].push({
         name: item.name,
         value: capacity
       });
     });
 
+    // Convertir el objeto agrupado en un array de series para Highcharts
     return Object.entries(grouped).map(([name, data]) => ({
       name,
       data

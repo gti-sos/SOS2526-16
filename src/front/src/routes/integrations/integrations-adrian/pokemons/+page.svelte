@@ -20,20 +20,20 @@
         if (!browser) return;
 
         try {
-            // 1. CARGAR LIBRERÍAS (Necesitamos el módulo variable-pie)
+            // Cargar módulos de la librería
             await loadScript("https://code.highcharts.com/highcharts.js");
             await loadScript("https://code.highcharts.com/modules/variable-pie.js");
             await loadScript("https://code.highcharts.com/modules/accessibility.js");
             const Highcharts = window.Highcharts;
 
-            // 2. PETICIÓN FETCH (Obtener datos de 5 Pokémon diferentes)
+            // 2. Petición fetch. Obtenemos 5 Pokemons
             const ids = [1, 4, 7, 25, 143]; // Bulbasaur, Charmander, Squirtle, Pikachu, Snorlax
             const responses = await Promise.all(ids.map(id => fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)));
             const data = await Promise.all(responses.map(r => r.json()));
             
             pokemonData = data;
 
-            // 3. PROCESAMIENTO DE DATOS PARA VARIABLE PIE
+            // Carga del gráfico
             // Cada punto necesita: y (valor para el ángulo) y z (valor para el radio)
             const chartData = data.map(p => ({
                 name: p.name.toUpperCase(),
@@ -41,7 +41,7 @@
                 z: p.weight           // Determina el radio (lo larga que es la porción)
             }));
 
-            // 4. RENDERIZADO
+            // Visualización del gráfico
             Highcharts.chart('container-variable-pie', {
                 chart: {
                     type: 'variablepie', 
