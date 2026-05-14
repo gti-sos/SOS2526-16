@@ -9,7 +9,7 @@
         if (!browser) return;
 
         try {
-            // 1. CARGA DE MÓDULOS
+            // Cargamos los módulos de la biblioteca highcharts
             const [tm, hm] = await Promise.all([
                 import('highcharts/modules/treemap'),
                 import('highcharts/modules/heatmap')
@@ -19,25 +19,25 @@
             if (typeof initTreemap === 'function') initTreemap(Highcharts);
             if (typeof initHeatmap === 'function') initHeatmap(Highcharts);
 
-            // 2. CARGA DE DATOS
+            // Cargamos los datos
             await fetch('/api/v1/global-ev-stock-volumes/loadInitialData');
             const res = await fetch('/api/v1/global-ev-stock-volumes');
             
             if (res.ok) {
                 const stockData = await res.json();
 
-                // 3. MAPEO DE TODOS LOS CAMPOS DE TU API
+                // 3. Map con los campos de mi API
                 const chartData = stockData.map((d: any) => ({
                     name: d.region_country,
-                    value: d.ev_stock,                      // Campo 1: ev_stock
-                    colorValue: d.oil_world_displacement,   // Campo 2: oil_world_displacement
-                    year: d.year,                           // Campo 3: year
-                    macro: d.macro_region_stock || d.macroregion_stock, // Campo 4: macro_region_stock
-                    world: d.worldwide_stock,                // Campo 5: worldwide_stock
-                    oil: d.oil_world_displacement           // Campo 6: oil_world_displacement
+                    value: d.ev_stock,                      
+                    colorValue: d.oil_world_displacement,   
+                    year: d.year,                           
+                    macro: d.macro_region_stock || d.macroregion_stock, 
+                    world: d.worldwide_stock,                
+                    oil: d.oil_world_displacement           
                 }));
 
-                // 4. CONFIGURACIÓN DEL GRÁFICO
+                // Implementamos gráfico
                 // @ts-ignore
                 Highcharts.chart(container, {
                     colorAxis: {
@@ -57,7 +57,7 @@
 
                     title: { text: 'Análisis Integral de Stock de Vehículos Eléctricos' },
 
-                    // --- TOOLTIP CON TODOS LOS CAMPOS ---
+                    //TOOLTIP CON TODOS LOS CAMPOS
                     tooltip: {
                         useHTML: true,
                         headerFormat: '<table style="width:200px">',

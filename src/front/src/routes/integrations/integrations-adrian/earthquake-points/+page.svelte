@@ -19,21 +19,21 @@
         if (!browser) return;
 
         try {
-            // 1. CARGAR LIBRERÍAS DE MAPAS
+            // Cargar librerías
             await loadScript("https://code.highcharts.com/maps/highmaps.js");
             await loadScript("https://code.highcharts.com/modules/accessibility.js");
             const Highcharts = window.Highcharts;
 
-            // 2. CARGAR EL MAPA BASE DEL MUNDO
+            // Cargar mapa mundo genérico
             const worldTopology = await fetch(
                 'https://code.highcharts.com/mapdata/custom/world.topo.json'
             ).then(res => res.json());
 
-            // 3. PETICIÓN FETCH AL PROXY
+            // Petición fetch
             const res = await fetch('/api/v1/proxy/map-data');
             const json = await res.json();
             
-            // 4. PROCESAMIENTO DE DATOS
+            // Carga de datos
             // Tomamos los 50 eventos más recientes
             const earthquakePoints = json.features.slice(0, 50).map(f => ({
                 name: f.properties.place,
@@ -43,7 +43,7 @@
                 colorValue: f.properties.mag    // Magnitud para el color
             }));
 
-            // 5. GENERACIÓN DEL MAPA
+            // Visualización mapa
             Highcharts.mapChart('map-container', {
                 chart: { 
                     map: worldTopology,

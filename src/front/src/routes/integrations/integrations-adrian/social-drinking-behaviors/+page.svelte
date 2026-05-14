@@ -19,20 +19,20 @@
     onMount(async () => {
         if (!browser) return;
         try {
-            // 1. CARGAR LIBRERÍAS
+            // Carga de módulos de la librería
             await loadScript("https://code.highcharts.com/highcharts.js");
             await loadScript("https://code.highcharts.com/modules/sankey.js");
             await loadScript("https://code.highcharts.com/modules/accessibility.js");
             Highcharts = window.Highcharts;
 
-            // 2. FETCH DE LAS APIS CON VALIDACIÓN
-            // Cargamos tus datos iniciales para asegurar que hay contenido
+            // fetch API compañero
+            // Cargamos datos iniciales mi API
             await fetch("/api/v1/global-ev-stock-volumes/loadInitialData");
 
             const resStock = await fetch("/api/v1/global-ev-stock-volumes");
             const resAlcohol = await fetch("/api/v1/proxy/social-drinking-behaviors");
 
-            // 🟢 VALIDACIÓN 1: Comprobar si los servidores responden bien (evita el 429/404)
+            // Comprobar si los servidores responden bien (evita 429/404). DEPURACIÓN
             if (!resStock.ok || !resAlcohol.ok) {
                 errorMsg = `El servidor del socio está saturado (Error ${resAlcohol.status}). Por favor, espera 1 minuto y recarga.`;
                 isLoading = false;
@@ -42,14 +42,14 @@
             const stockData = await resStock.json();
             const alcoholData = await resAlcohol.json();
 
-            // 🟢 VALIDACIÓN 2: Comprobar que recibimos listas (evita el crash de .find)
+            //Comprobación extra(ver si recibimos lista). DEPURACIÓN
             if (!Array.isArray(stockData) || !Array.isArray(alcoholData)) {
                 errorMsg = "Los datos recibidos no tienen el formato correcto.";
                 isLoading = false;
                 return;
             }
 
-            // 3. PROCESAMIENTO PARA SANKEY
+            // Carga de datos
             const commonCountries = ["Canada", "Japan", "China"];
             let sankeyData = [];
 
@@ -59,11 +59,11 @@
 
                 // Solo añadimos si hay datos
                 if (s || a) {
-                    // Rama 1: Tus vehículos (Escalado para que se vea igual de grueso que el alcohol)
+                    // Rama 1: EV vehicles
                     sankeyData.push([country, 'Stock Vehículos Eléctricos', s ? (s.ev_stock / 50) : 150]);
                     
                     if (a) {
-                        // Rama 2: Su alcohol
+                        // Rama 2: Alcohol
                         const scale = 20;
                         sankeyData.push([country, 'Consumo Alcohol', Number(a.total_liter) * scale]);
                         sankeyData.push(['Consumo Alcohol', 'Cerveza', Number(a.beer_share) * scale]);
@@ -73,7 +73,7 @@
                 }
             });
 
-            // 4. RENDERIZADO
+            // Visualización del gráfico
             if (sankeyData.length > 0) {
                 Highcharts.chart(container, {
                     title: { text: 'Estadísticas consumo alcohol y Stock EV' },
@@ -98,7 +98,7 @@
 </script>
 
 <div style="text-align: center; padding: 20px; font-family: sans-serif;">
-    <h1>Integración de Alto Nivel (Sankey Diagram)</h1>
+    <h1>Integración EV Stock y Consumo de alcochol mediante  Sankey Diagram</h1>
 
     <div bind:this={container} style="width: 100%; max-width: 1000px; height: 600px; margin: 20px auto; background: white; border: 1px solid #ddd; border-radius: 8px;"></div>
 
