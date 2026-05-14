@@ -1,10 +1,13 @@
 <script>
     import { onMount } from 'svelte';
+    
+    // array pa guardar lo q llega y un chivato por si peta la api
     let festivos = $state([]);
     let error = $state(false);
 
     onMount(async () => {
         try {
+            // llamada directa a la api con el año y el pais metidos a capon en la url
             const res = await fetch('https://date.nager.at/api/v3/PublicHolidays/2024/ES');
             if (res.ok) {
                 festivos = await res.json();
@@ -12,6 +15,7 @@
                 error = true;
             }
         } catch (e) {
+            // si el fetch da error de red o algo asi
             error = true;
         }
     });

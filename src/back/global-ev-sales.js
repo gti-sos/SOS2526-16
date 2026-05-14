@@ -4,14 +4,14 @@ util.isRegExp = util.isRegExp || function(re) { return re instanceof RegExp; };
 import express from "express";
 import dataStore from 'nedb';
 
-// 1. Inicialización de la base de datos con persistencia
-//const db = new dataStore({ filename: './db/global-ev-sales.db', autoload: true });
+// arranco la base de datos en memoria para no tener follones de archivos en render
 let db = new dataStore();
 const router = express.Router();
 
+// declaramos la url base para no repetirla en los proxys
 let BASE_URL_API = "/api/v1";
 
-// 2. Datos iniciales
+// datos 
 const datos = [
   { region: 'Australia', category: 'Historical', parameter: 'EV stock share', mode: 'Cars', powertrain: 'EV', year: 2022, unit: 'Percent', value: 2345, economic_impact: 500 },
   { region: 'Finland', category: 'Historical', parameter: 'EV stock share', mode: 'Vans', powertrain: 'EV', year: 2021, unit: 'Percent', value: 4780, economic_impact: 670.5 },
@@ -26,26 +26,23 @@ const datos = [
 ];
 
 
+// funcion q uso en post y put para ver si el json esta bien
+// miro que tenga 9 campos y que sean los nombres correctos
 function estructuraValida(body) {
   const camposEsperados = ['region', 'category', 'parameter', 'mode', 'powertrain', 'year', 'unit', 'value', 'economic_impact'];
   const camposBody = Object.keys(body);
   
-  // Si no tiene exactamente 9 campos, es inválido
   if (camposBody.length !== camposEsperados.length) return false;
   
-  // Comprobamos que todos los campos esperados estén presentes
   for (let campo of camposEsperados) {
     if (!camposBody.includes(campo)) return false;
   }
   return true;
 }
 
-// ==========================================
-// ENDPOINTS
-// ==========================================
 
-// LOAD INITIAL DATA
-// LOAD INITIAL DATA
+// mete los datos iniciales si db count es 0
+// si ya tiene cosas suelto un 409 conflicto para q no se dupliquen
 router.get("/loadInitialData", (req, res) => {
   db.count({}, (err, count) => {
     if (err) {
@@ -54,13 +51,13 @@ router.get("/loadInitialData", (req, res) => {
     }
     
     if (count === 0) {
-
+      //clono los datos conviritiendolos en string y luego de nuevo a json
       const clonDatos = JSON.parse(JSON.stringify(datos));
-      
+      //si todo va bien, rellena newDocs
       db.insert(clonDatos, (err, newDocs) => {
         if (err) {
           console.log("FALLO CRÍTICO AL INSERTAR DATOS INICIALES:", err);
-          return res.sendStatus(500); // Si falla, que devuelva 500
+          return res.sendStatus(500); 
         }
         res.sendStatus(201);
       });
@@ -70,18 +67,20 @@ router.get("/loadInitialData", (req, res) => {
   });
 });
 
+
+// te redirige directo al enlace del postman
 router.get("/docs", (req, res) => {
-  // Aquí pondremos el enlace público que te dará Postman
   res.redirect("https://documenter.getpostman.com/view/52408123/2sBXiesa2T");
 });
 
-// GET COLECCIÓN (Con búsquedas y paginación)
-router.get("/", (req, res) => {
 
+// get base.
+// encadeno ifs para aplicar busquedas si mandan params en la url
+// despues recorto el array segun offset y limit para paginar 
+router.get("/", (req, res) => {
   db.find({}, { _id: 0 }, (err, result) => {
     if (err) return res.sendStatus(500);
 
-    // FILTROS POR TODOS LOS CAMPOS
     if (req.query.region) result = result.filter(d => d.region.toLowerCase() === req.query.region.toLowerCase());
     if (req.query.category) result = result.filter(d => d.category.toLowerCase() === req.query.category.toLowerCase());
     if (req.query.parameter) result = result.filter(d => d.parameter.toLowerCase() === req.query.parameter.toLowerCase());
@@ -92,11 +91,9 @@ router.get("/", (req, res) => {
     if (req.query.value) result = result.filter(d => d.value === Number(req.query.value));
     if (req.query.economic_impact) result = result.filter(d => d.economic_impact === Number(req.query.economic_impact));
 
-    // Búsquedas de rango de años
     if (req.query.from) result = result.filter(d => d.year >= Number(req.query.from));
     if (req.query.to) result = result.filter(d => d.year <= Number(req.query.to));
 
-    // PAGINACIÓN
     let offset = Number(req.query.offset) || 0; 
     let limit = Number(req.query.limit);
 
@@ -106,6 +103,10 @@ router.get("/", (req, res) => {
     res.json(result);
   });
 });
+
+
+// proxys para quitar cors 
+// yo pido los datos desde el back y luego svelte me los pide a mi ruta interna
 
 //PROXY FELICIDAD
 router.get("/proxy/happiness-indices", async (req, res) => {
@@ -166,7 +167,7 @@ router.get("/proxy/divisas", async (req, res) => {
 });
 
 
-// GET POR REGIÓN (Tu requisito especial)
+// para buscar solo por pais. devuelve el array con todo lo de ese sitio
 router.get("/:region", (req, res) => {
   const region = req.params.region;
   
@@ -176,7 +177,7 @@ router.get("/:region", (req, res) => {
   });
 });
 
-// GET RECURSO INDIVIDUAL
+// usa findOne para q devuelva un solo json suelto y no dentro de array
 router.get("/:region/:year", (req, res) => {
   const region = req.params.region;
   const year = Number(req.params.year);
@@ -189,7 +190,7 @@ router.get("/:region/:year", (req, res) => {
 
 
 
-// POST COLECCIÓN
+// crear nuevo dato. valida body y mira si ya existe antes de meterlo
 router.post("/", (req, res) => {
   const newItem = req.body;
 
@@ -197,7 +198,6 @@ router.post("/", (req, res) => {
     return res.sendStatus(400);
   }
 
-  // Aseguramos que el año se busca como Número por si Postman lo envía como Texto
   const yearBusqueda = Number(newItem.year);
 
   db.findOne({ region: newItem.region, year: yearBusqueda }, (err, existing) => {
@@ -217,11 +217,12 @@ router.post("/", (req, res) => {
   });
 });
 
-// POST MÉTODOS NO PERMITIDOS
+// capas que pide el backlog para bloquear metodos sueltos
 router.post("/:region", (req, res) => res.sendStatus(405));
 router.post("/:region/:year", (req, res) => res.sendStatus(405));
 
-// PUT RECURSO INDIVIDUAL
+// compruebo que la url y el json coinciden en pais y año
+// si si pues lanzo update
 router.put("/:region/:year", (req, res) => {
   const regionUrl = req.params.region;
   const yearUrl = Number(req.params.year);
@@ -248,21 +249,23 @@ router.put("/:region/:year", (req, res) => {
   );
 });
 
-// PUT MÉTODOS NO PERMITIDOS
+// mas bloqueos del backlog
 router.put("/", (req, res) => res.sendStatus(405));
 router.put("/:region", (req, res) => res.sendStatus(405));
 
-// DELETE COLECCIÓN
+
+// borrar todo. toca poner multi a true porq nedb solo borra el primer doc q ve
 router.delete("/", (req, res) => {
   db.remove({}, { multi: true }, (err, numRemoved) => {
     res.sendStatus(200);
   });
 });
 
-// DELETE RECURSO INDIVIDUAL
+// si la operacion acaba devolviendo 0 es q ya no estaba en bd
 router.delete("/:region/:year", (req, res) => {
   const region = req.params.region;
   const year = Number(req.params.year);
+
 
   db.remove({ region: region, year: year }, {}, (err, numRemoved) => {
     if (numRemoved === 0) {

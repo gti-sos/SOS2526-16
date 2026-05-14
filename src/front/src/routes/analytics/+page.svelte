@@ -7,7 +7,7 @@
 	let data_ev_stock_volumes = [];
 
 	onMount(async () => {
-		//Cargar datos en paraleloç
+		//Cargar datos en paralelo
 		  await Promise.all([
             fetch('/api/v1/global-ev-stock-volumes/loadInitialData'),
             fetch('/api/v1/global-ev-sales/loadInitialData'),

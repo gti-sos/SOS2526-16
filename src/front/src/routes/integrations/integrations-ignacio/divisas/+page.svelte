@@ -2,11 +2,12 @@
     import { onMount } from 'svelte';
     import { browser } from '$app/environment';
 
+    // variables para el canvas de la grafica y los mensajitos de estado
     let chartContainer;
     let cargando = $state(true);
     let errorMensaje = $state('');
 
-    // Mapeo de tus países a su moneda
+    // diccionario a mano pa traducir mis paises a los codigos q usa la api de frankfurter
     const monedas = {
         'australia': 'AUD',
         'usa': 'USD',
@@ -16,10 +17,11 @@
     };
 
     onMount(async () => {
+        // corto si es ssr pa q no pete al buscar window
         if (!browser) return;
 
         try {
-            // 1. Cargar Chart.js
+            // meto el script de chartjs a lo bruto en el head del html
             await new Promise((resolve) => {
                 if (window.Chart) return resolve();
                 const script = document.createElement('script');
@@ -28,7 +30,7 @@
                 document.head.appendChild(script);
             });
 
-            // 2. Fetch de tus datos (EV) y de la API de Divisas (Frankfurter)
+            // hago los dos fetch. el mio normal y el de la externa a traves del proxy
             const resEV = await fetch('/api/v1/global-ev-sales');
             const resDivisas = await fetch('/api/v1/global-ev-sales/proxy/divisas');
 
@@ -37,18 +39,20 @@
             const misDatos = await resEV.json();
             const dataDivisas = await resDivisas.json();
 
+            // arrays para luego darselos a chartjs
             const labels = [];
             const valoresEV = [];
             const valoresDivisa = [];
 
-            // 3. Cruzar datos: ¿Cuánto vale 1€ en ese país comparado con tus ventas?
-            // Filtramos por un año reciente (2021)
+            // filtro mis datos al 2021 q se q ahi hay chicha y no sale el donut entero de un solo pais
             const misDatos2021 = misDatos.filter(d => Number(d.year) === 2021);
 
+            // cruzo mis datos con los de la moneda
             misDatos2021.forEach(miDato => {
                 const codigoMoneda = monedas[miDato.region.toLowerCase().trim()];
                 const tasaCambio = dataDivisas.rates[codigoMoneda];
 
+                // si el pais esta en mi diccionario y frankfurter me da su cambio, lo guardo
                 if (tasaCambio) {
                     labels.push(`${miDato.region} (${codigoMoneda})`);
                     valoresEV.push(miDato.value);
@@ -56,13 +60,14 @@
                 }
             });
 
+            // por si acaso falla el filtro y se queda vacio
             if (labels.length === 0) {
                 errorMensaje = "No hay países comunes con moneda propia (evitamos el Euro para comparar).";
                 cargando = false;
                 return;
             }
 
-            // 4. Crear la gráfica Doughnut (PERMITIDA)
+            // monto el donut doble con los dos datasets
             new window.Chart(chartContainer, {
                 type: 'doughnut',
                 data: {
