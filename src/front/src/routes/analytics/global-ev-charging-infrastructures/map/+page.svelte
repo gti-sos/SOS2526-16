@@ -8,6 +8,7 @@
 	let Highcharts;
 	let chart;
 
+	// Mapeo de países para que coincidan con los nombres de Highcharts
 	const countryMap = {
 		germany: 'Germany',
 		canada: 'Canada',
@@ -28,6 +29,7 @@
 		});
 	}
 
+	// Función para las lineas de latitud y longitud
 	const getGraticule = () => {
 		const data = [];
 
@@ -56,6 +58,7 @@
 		return data;
 	};
 
+	// Función para renderizar el mapa con los datos del año seleccionado
 	async function renderChart() {
 		if (!Highcharts || !selectedYear) return;
 

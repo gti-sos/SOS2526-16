@@ -5,7 +5,7 @@
 
 	onMount(async () => {
 
-		// 🔥 cargar datos iniciales
+		//cargar datos iniciales
 		await fetch('/api/v1/global-ev-charging-infrastructures/loadInitialData');
 
 		const res = await fetch('/api/v1/global-ev-charging-infrastructures');
@@ -17,11 +17,12 @@
 
 		data = await res.json();
 
-		// 🔥 limitar años para que quepan bien (puedes cambiar 4 → 5 si quieres)
+		// limitar años y ordenar
 		const years = [...new Set(data.map(d => d.year))]
 			.sort((a, b) => a - b)
 			.slice(-5);
 
+		//Para cada año, crear una serie con los países y sus puntos de carga
 		const series = years.map(year => {
 
 			const dataYear = data.filter(d => d.year === year);
@@ -42,12 +43,13 @@
 			};
 		});
 
+		//Esto es necesario para que Highcharts esté disponible
 		const Highcharts = window.Highcharts;
 
 		Highcharts.chart('container', {
 			chart: {
 				type: 'packedbubble',
-				height: '900px' // 🔥 clave para que entren todos
+				height: '900px'
 			},
 
 			title: {
@@ -102,7 +104,7 @@
 	});
 </script>
 
-<!-- 🔥 Highcharts desde navegador -->
+<!-- Highcharts desde navegador -->
 <svelte:head>
 	<script src="https://code.highcharts.com/highcharts.js"></script>
 	<script src="https://code.highcharts.com/highcharts-more.js"></script>
