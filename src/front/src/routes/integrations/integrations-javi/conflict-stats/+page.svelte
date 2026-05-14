@@ -7,7 +7,7 @@
             "https://sos2526-13.onrender.com/api/v2/conflict-stats"
         ).then(r => r.json());
 
-        // 2. Llamada GET a tu propia API
+        // 2. Llamada GET a mi api
         const evData = await fetch(
             "/api/v1/global-ev-charging-infrastructures/"
         ).then(r => r.json());
@@ -20,6 +20,7 @@
             ])
         ].sort((a, b) => a - b);
 
+        // Extraer ubicaciones únicas de conflictos y países únicos de EV para crear series independientes
         const locations = [...new Set(conflictData.map(d => d.location))];
         const countries = [...new Set(evData.map(d => d.country))];
 
@@ -44,7 +45,7 @@
             })
         }));
 
-        // SERIES DE TU API (Asignadas al Eje Y derecho: yAxis: 1)
+        // SERIES DE MI API (Asignadas al Eje Y derecho: yAxis: 1)
         const evSeries = countries.map(country => ({
             name: `EV - ${country}`,
             type: "area",

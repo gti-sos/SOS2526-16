@@ -29,6 +29,7 @@
 		}
 	});
 
+	// Función para parsear el precio, eliminando el símbolo de dólar y convirtiendo a número
 	function parsePrice(price) {
 		return Number(String(price).replace('$', '')) || 0;
 	}
@@ -36,6 +37,7 @@
 	function createChart() {
 		const Highcharts = window.Highcharts;
 
+		// Tomamos los 10 estados con el precio de gasolina regular más alto para mostrar en el gráfico
 		const topStates = gasData
 			.map((state) => ({
 				name: state.name,

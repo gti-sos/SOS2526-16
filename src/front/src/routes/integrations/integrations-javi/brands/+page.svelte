@@ -9,8 +9,10 @@
 
 	onMount(async () => {
 		try {
+			// Fetch data from the custom proxy endpoint
 			const res = await fetch(PROXY_URL);
 
+			//Si no es ok, lanza un error
 			if (!res.ok) {
 				throw new Error(`Error HTTP: ${res.status}`);
 			}
@@ -18,24 +20,31 @@
 			const json = await res.json();
 			console.log('Brands API response:', json);
 
+		
 			const brands = Array.isArray(json) ? json : json.data || json.result || [];
 
 			createChart(brands);
 		} catch (e) {
 			error = e.message;
-		} finally {
+		
+		} 
+		// Finalmente, independientemente del resultado, se establece loading a false
+		finally {
 			loading = false;
 		}
 	});
 
+	//Funcion para parsear el valor de la marca, eliminando símbolos y convirtiendo a número
 	function parseBrandValue(value) {
 		return Number(String(value).replace('$', '').replace(',', '')) || 0;
 	}
 
+	//Función para crear el gráfico de Highcharts
 	function createChart(brands) {
 		const Highcharts = window.Highcharts;
 
 		const treemapData = brands
+			//Solo tomamos las primeras 30 marcas para evitar sobrecargar el gráfico
 			.slice(0, 30)
 			.map((brand) => ({
 				name: brand.Brand,
@@ -47,6 +56,7 @@
 					sector: brand.Sector
 				}
 			}))
+			// Filtramos marcas con valor 0 para evitar mostrar bloques sin valor en el treemap
 			.filter((b) => b.value > 0);
 
 		Highcharts.chart('container', {

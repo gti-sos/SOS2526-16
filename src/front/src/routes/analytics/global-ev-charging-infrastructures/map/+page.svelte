@@ -19,6 +19,7 @@
 		monaco: 'Monaco'
 	};
 
+	// Función para cargar scripts de forma dinámica
 	async function loadScript(src) {
 		return new Promise((resolve) => {
 			if (document.querySelector(`script[src="${src}"]`)) return resolve();
@@ -74,6 +75,7 @@
 			custom: d
 		}));
 
+		// Si ya hay un chart, destruirlo antes de crear uno nuevo
 		if (chart) chart.destroy();
 
 		chart = Highcharts.mapChart('container', {
@@ -139,10 +141,12 @@
 		});
 	}
 
+	// Función para manejar el cambio de año
 	function handleYearChange() {
 		renderChart();
 	}
 
+	// Cargar scripts y datos al montar el componente
 	onMount(async () => {
 		await Promise.all([
 			loadScript('https://code.highcharts.com/maps/highmaps.js'),
@@ -166,7 +170,7 @@
 	});
 </script>
 
-<h2>🌍 EV Globe Visualization</h2>
+<h2>EV Globe Visualization</h2>
 
 <label>Año:</label>
 <select bind:value={selectedYear} on:change={handleYearChange}>
