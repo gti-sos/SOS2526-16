@@ -6,7 +6,7 @@ const BASE_URL_API = "/api/v1/global-ev-charging-infrastructures";
 
 function evChargingInfrastructuresAPI(app) {
 
-  // Datos iniciales
+  //Datos iniciales
   const initialData = [
     { country: "germany", year: 2021, charging_point: 63898, ac_slow: 1809, dc_fast: 3451, total_power_kw: 1812933 },
     { country: "canada", year: 2023, charging_point: 26108, ac_slow: 15581, dc_fast: 2076, total_power_kw: 415585 },
@@ -174,14 +174,14 @@ app.get(BASE_URL_API + "/proxy/usa-gas-price", async (req, res) => {
         }
       }
     );
-
+    // Si la respuesta no es OK, devolvemos el error
     if (!response.ok) {
       return res.status(response.status).json({ error: "Error RapidAPI" });
     }
 
     const data = await response.json();
     res.json(data);
-
+    // Si hay un error en la petición, lo capturamos y devolvemos un error 500
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Proxy error" });
@@ -248,7 +248,7 @@ app.get(BASE_URL_API + "/proxy/crypto-exchanges", async (req, res) => {
 
     const country = req.params.country.toLowerCase();
     const year = Number(req.params.year);
-
+    // Buscamos el recurso por country y year, ignorando el id que genera NeDB
     db.findOne(
       { country: country, year: year },
       { _id: 0 },
@@ -276,6 +276,7 @@ app.get(BASE_URL_API + "/proxy/crypto-exchanges", async (req, res) => {
       newItem.dc_fast === undefined ||
       newItem.total_power_kw === undefined
     ) {
+      // Si falta algún campo obligatorio, devolvemos un error 400 Bad Request
       return res.sendStatus(400);
     }
 
@@ -284,6 +285,7 @@ app.get(BASE_URL_API + "/proxy/crypto-exchanges", async (req, res) => {
       (err, existing) => {
 
         if (existing) {
+          // Si ya existe un recurso con el mismo country y year, devolvemos un error 409 Conflict
           return res.sendStatus(409);
         }
 
@@ -318,9 +320,10 @@ app.get(BASE_URL_API + "/proxy/crypto-exchanges", async (req, res) => {
       body.country.toLowerCase() !== country ||
       Number(body.year) !== year
     ) {
+      // Si el body no tiene country o year, o no coinciden con los parámetros, devolvemos un error 400 Bad Request
       return res.sendStatus(400);
     }
-
+    // No permitimos actualizar el _id generado por NeDB
     delete body._id;
 
     db.update(
